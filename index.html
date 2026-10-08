@@ -320,8 +320,8 @@ function tally(){
   }
   G.tie = false;
   const out = G.P.find(x => x.p === top[0]); out.a = false; G.lo = out.n;
-  // Any spy voted out ends the game. Otherwise spies win at 2 players left (one spy) or 3 (two spies).
-  if(out.r === "s") return finish("c");
+  // Commoners win once every spy is out. Otherwise spies win at 2 players left (one-spy levels) or 3 (two-spy levels).
+  if(!G.P.some(x => x.r === "s" && x.a)) return finish("c");
   const spies = G.P.filter(x => x.r === "s").length, living = G.P.filter(x => x.a).length;
   if(living <= (spies >= 2 ? 3 : 2)) return finish("s");
   G.ph = "out"; done();
@@ -510,7 +510,7 @@ function over(S){
   const spy = S.win === "s", r = L.rated[S.gid] || null;
   paint(`<section class="card">
     <span class="stamp ${spy ? "" : "good"}">${spy ? "Spies win" : "Commoners win"}</span>
-    <h1>${S.lo ? `${esc(S.lo)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "A spy has been caught."}</h1>
+    <h1>${S.lo ? `${esc(S.lo)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "Every spy has been caught."}</h1>
     <p class="muted">Commoner word: <b>${esc(S.cw)}</b> · Spy word: <b>${esc(S.sw)}</b></p>
     <ul class="list">${S.pl.map(x => `<li><span>${esc(x[1])} · ${S.w[x[0]] ? esc(S.w[x[0]]) : "<i>blank</i>"}</span><span class="chip ${S.ro[x[0]]==="s" ? "spy" : ""}">${S.ro[x[0]]==="s" ? "Spy" : "Commoner"}</span></li>`).join("")}</ul>
   </section>
