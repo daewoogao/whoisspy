@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap">
 <style>
-/* Layout: one phone-width "case file" card per screen, passed hand to hand. */
+/* One phone-width card per screen. Every phone shows the same screen; the host's phone also gets the controls. */
 :root{
   --bg:#eef0f6; --card:#ffffff; --ink:#1b1f3a; --muted:#5b6185; --line:#d6d9e8;
   --accent:#3b3fd8; --accent-ink:#ffffff; --stamp:#e2483d; --good:#1f8a5b; --chip:#e6e8fb;
@@ -20,8 +20,8 @@
 :root[data-theme="dark"]{
   --bg:#12142a; --card:#1c1f3d; --ink:#eceefb; --muted:#a3a8cc; --line:#2f3360;
   --accent:#8f93ff; --accent-ink:#12142a; --stamp:#ff7a6e; --good:#4fd39a; --chip:#2a2e5a; color-scheme:dark}
-html,body{height:100%}
-body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--body); padding-inline:16px; padding-block:20px}
+html,body{min-height:100%}
+body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--body); padding-inline:16px; padding-block:20px; margin:0}
 .wrap{max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:16px}
 header{display:flex; align-items:center; justify-content:space-between; gap:12px}
 .logo{font:800 22px/1 var(--display); letter-spacing:-.01em}
@@ -33,14 +33,15 @@ h2{font:800 18px/1.2 var(--display); margin:0}
 p{margin:0}
 .muted{color:var(--muted)}
 label{font-weight:800; font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
-textarea,select{width:100%; box-sizing:border-box; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:10px 12px}
-textarea{min-height:150px; resize:vertical}
+input,select{width:100%; box-sizing:border-box; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:12px}
+input.code{font:800 26px/1 var(--display); letter-spacing:.18em; text-transform:uppercase; text-align:center}
 .field{display:flex; flex-direction:column; gap:6px}
 .row{display:flex; gap:10px; flex-wrap:wrap}
 .row > *{flex:1 1 140px; min-width:0}
 button{font:800 16px/1 var(--body); border-radius:14px; padding:15px 18px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer}
 button.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
-button:focus-visible,select:focus-visible,textarea:focus-visible,.pick:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+button.link{background:none; border:none; padding:6px 0; color:var(--muted); font-weight:700; text-decoration:underline; align-self:flex-start}
+button:focus-visible,select:focus-visible,input:focus-visible,.reveal:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 button:disabled{opacity:.45; cursor:default}
 .levels{display:grid; gap:8px}
 .level{display:flex; gap:12px; align-items:flex-start; text-align:left; padding:12px 14px; font-weight:600; line-height:1.35}
@@ -48,35 +49,43 @@ button:disabled{opacity:.45; cursor:default}
 .level small{display:block; color:var(--muted); font-weight:600; margin-top:3px}
 .level[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 0 0 2px var(--accent)}
 .warn{color:var(--stamp); font-weight:700; font-size:14px}
-.reveal{display:grid; place-items:center; min-height:190px; border-radius:16px; border:2px dashed var(--line); background:var(--bg); user-select:none; -webkit-user-select:none; touch-action:none; text-align:center; padding:16px; cursor:pointer}
+.bigcode{font:800 48px/1 var(--display); letter-spacing:.14em; text-align:center; padding:8px 0}
+.reveal{display:grid; place-items:center; min-height:170px; border-radius:16px; border:2px dashed var(--line); background:var(--bg); user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; touch-action:none; text-align:center; padding:16px; cursor:pointer}
 .reveal.on{border-style:solid; border-color:var(--accent)}
 .word{font:800 40px/1.1 var(--display); text-wrap:balance}
 .list{display:flex; flex-direction:column; gap:8px; margin:0; padding:0; list-style:none}
 .list li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:var(--bg)}
 .list li.out{opacity:.45; text-decoration:line-through}
-.chip{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:999px; background:var(--chip); color:var(--ink)}
+.chip{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:999px; background:var(--chip); color:var(--ink); white-space:nowrap}
 .chip.spy{background:var(--stamp); color:#fff}
 .picks{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px}
-.pick{padding:16px 10px}
+.pick{padding:16px 10px; overflow-wrap:anywhere}
 .stamp{align-self:flex-start; font:800 13px/1 var(--display); letter-spacing:.12em; text-transform:uppercase; color:var(--stamp); border:2px solid var(--stamp); border-radius:6px; padding:6px 8px; transform:rotate(-3deg)}
 .stamp.good{color:var(--good); border-color:var(--good)}
 .score{font-variant-numeric:tabular-nums; font-weight:800}
 .thumbs{display:flex; gap:10px}
 .thumbs button[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 0 0 2px var(--accent)}
+.hostbar{border-top:1px dashed var(--line); padding-top:14px; display:flex; flex-direction:column; gap:10px}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--good); margin-right:6px}
+.dot.off{background:var(--stamp)}
 .foot{font-size:13px; color:var(--muted); text-align:center}
+.foot a{color:inherit}
+a{color:var(--accent)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
+<script src="peerjs.min.js"></script>
 </head>
 <body>
 <div class="wrap">
-  <header><div class="logo">Who<span>Is</span>Spy</div><div class="tag">Pass the phone</div></header>
+  <header><div class="logo">Who<span>Is</span>Spy</div><div class="tag" id="net"></div></header>
   <main id="app" aria-live="polite"></main>
-  <p class="foot">One phone is passed around the table. Your scores and ratings stay on this phone.</p>
+  <p class="foot">Everyone opens this page on their own phone. One person creates the club, the rest join with its code.</p>
 </div>
 
 <script>
-const BANK = {"Food and drink": [["Coffee", "咖啡", "Tea", "茶"], ["Dumpling", "饺子", "Wonton", "馄饨"], ["Pizza", "披萨", "Pie", "馅饼"], ["Ice cream", "冰淇淋", "Frozen yogurt", "冻酸奶"], ["Spaghetti", "意大利面", "Ramen", "拉面"], ["Milk", "牛奶", "Soy milk", "豆浆"], ["Butter", "黄油", "Cheese", "奶酪"], ["Honey", "蜂蜜", "Syrup", "糖浆"], ["Watermelon", "西瓜", "Cantaloupe", "哈密瓜"], ["Strawberry", "草莓", "Cherry", "樱桃"], ["Hot pot", "火锅", "Barbecue", "烧烤"], ["Sushi", "寿司", "Rice ball", "饭团"], ["Mooncake", "月饼", "Rice dumpling", "粽子"], ["Steamed bun", "馒头", "Bread", "面包"], ["Cola", "可乐", "Sparkling water", "苏打水"], ["Chocolate", "巧克力", "Candy", "糖果"], ["Vinegar", "醋", "Soy sauce", "酱油"], ["Orange", "橙子", "Tangerine", "橘子"], ["Bubble tea", "珍珠奶茶", "Milkshake", "奶昔"], ["Popcorn", "爆米花", "Potato chips", "薯片"], ["French fries", "薯条", "Hash browns", "薯饼"], ["Steamed stuffed bun", "包子", "Dumpling", "饺子", "zh"], ["Fried dough stick", "油条", "Fried dough twist", "麻花", "zh"], ["Stinky tofu", "臭豆腐", "Durian", "榴莲", "zh"], ["Jianbing", "煎饼果子", "Roujiamo", "肉夹馍", "zh"], ["Spicy gluten strips", "辣条", "Beef jerky", "牛肉干", "zh"], ["Pancake", "松饼", "Waffle", "华夫饼", "en"]], "Animals": [["Cat", "猫", "Tiger", "老虎"], ["Butterfly", "蝴蝶", "Moth", "飞蛾"], ["Dolphin", "海豚", "Shark", "鲨鱼"], ["Rabbit", "兔子", "Hamster", "仓鼠"], ["Penguin", "企鹅", "Duck", "鸭子"], ["Horse", "马", "Zebra", "斑马"], ["Wolf", "狼", "Fox", "狐狸"], ["Crocodile", "鳄鱼", "Lizard", "蜥蜴"], ["Bee", "蜜蜂", "Mosquito", "蚊子"], ["Owl", "猫头鹰", "Eagle", "老鹰"], ["Frog", "青蛙", "Turtle", "乌龟"], ["Panda", "熊猫", "Koala", "考拉"], ["Giraffe", "长颈鹿", "Camel", "骆驼"], ["Goldfish", "金鱼", "Parrot", "鹦鹉"], ["Snake", "蛇", "Earthworm", "蚯蚓"], ["Sheep", "绵羊", "Goat", "山羊", "en"], ["Squirrel", "松鼠", "Mouse", "老鼠"], ["Peacock", "孔雀", "Flamingo", "火烈鸟"], ["Spider", "蜘蛛", "Ant", "蚂蚁"], ["Octopus", "章鱼", "Jellyfish", "水母"], ["Magpie", "喜鹊", "Crow", "乌鸦", "zh"], ["Dragon", "龙", "Phoenix", "凤凰", "zh"], ["Qilin", "麒麟", "Unicorn", "独角兽", "zh"], ["Alligator", "短吻鳄", "Crocodile", "鳄鱼", "en"]], "Places": [["Beach", "海滩", "Swimming pool", "游泳池"], ["Library", "图书馆", "Bookstore", "书店"], ["Hospital", "医院", "Pharmacy", "药店"], ["Cinema", "电影院", "Theater", "剧院"], ["Airport", "机场", "Train station", "火车站"], ["Hotel", "酒店", "Dormitory", "宿舍"], ["Supermarket", "超市", "Convenience store", "便利店"], ["Zoo", "动物园", "Aquarium", "水族馆"], ["Gym", "健身房", "Park", "公园"], ["Kindergarten", "幼儿园", "Playground", "游乐场"], ["Church", "教堂", "Temple", "寺庙"], ["Bank", "银行", "Post office", "邮局"], ["Restaurant", "餐厅", "Cafeteria", "食堂"], ["Museum", "博物馆", "Art gallery", "美术馆"], ["Elevator", "电梯", "Escalator", "扶梯"], ["Kitchen", "厨房", "Bathroom", "浴室"], ["Mountain", "山", "Island", "岛"], ["Desert", "沙漠", "Grassland", "草原"], ["Wedding", "婚礼", "Birthday party", "生日派对"], ["Classroom", "教室", "Office", "办公室"], ["Wet market", "菜市场", "Supermarket", "超市", "zh"], ["Temple fair", "庙会", "Night market", "夜市", "zh"], ["Bathhouse", "澡堂", "Hot spring", "温泉", "zh"], ["Motel", "汽车旅馆", "Hotel", "酒店", "en"]], "Everyday objects": [["Pillow", "枕头", "Cushion", "靠垫"], ["Toothbrush", "牙刷", "Comb", "梳子"], ["Umbrella", "雨伞", "Raincoat", "雨衣"], ["Mirror", "镜子", "Window", "窗户"], ["Glasses", "眼镜", "Sunglasses", "墨镜"], ["Chopsticks", "筷子", "Fork", "叉子"], ["Scissors", "剪刀", "Knife", "刀"], ["Pen", "钢笔", "Chalk", "粉笔", "en"], ["Key", "钥匙", "Password", "密码"], ["Wallet", "钱包", "Backpack", "背包"], ["Candle", "蜡烛", "Flashlight", "手电筒"], ["Socks", "袜子", "Gloves", "手套"], ["Phone", "手机", "Walkie-talkie", "对讲机"], ["Clock", "时钟", "Calendar", "日历"], ["Blanket", "毯子", "Towel", "毛巾"], ["Lipstick", "口红", "Crayon", "蜡笔"], ["Fan", "风扇", "Air conditioner", "空调"], ["Bottle", "瓶子", "Cup", "杯子"], ["Balloon", "气球", "Bubble", "泡泡"], ["Ladder", "梯子", "Stairs", "楼梯", "en"], ["Red envelope", "红包", "Spring couplets", "对联", "zh"], ["Abacus", "算盘", "Calculator", "计算器", "zh"], ["Firecracker", "鞭炮", "Fireworks", "烟花", "zh"], ["Mug", "马克杯", "Cup", "杯子", "en"]], "Jobs": [["Doctor", "医生", "Nurse", "护士"], ["Chef", "厨师", "Waiter", "服务员"], ["Teacher", "老师", "Coach", "教练"], ["Police officer", "警察", "Security guard", "保安"], ["Firefighter", "消防员", "Lifeguard", "救生员"], ["Pilot", "飞行员", "Flight attendant", "空乘"], ["Singer", "歌手", "Actor", "演员"], ["Dentist", "牙医", "Barber", "理发师"], ["Lawyer", "律师", "Judge", "法官"], ["Farmer", "农民", "Gardener", "园丁"], ["Journalist", "记者", "Writer", "作家"], ["Photographer", "摄影师", "Painter", "画家"], ["Magician", "魔术师", "Clown", "小丑"], ["Taxi driver", "出租车司机", "Delivery rider", "外卖员"], ["Programmer", "程序员", "Hacker", "黑客"], ["Astronaut", "宇航员", "Diver", "潜水员"], ["Tour guide", "导游", "Host", "主持人"], ["Vet", "兽医", "Zookeeper", "饲养员"], ["Cashier", "收银员", "Bank teller", "银行柜员"], ["Model", "模特", "Influencer", "网红"], ["Homeroom teacher", "班主任", "College counselor", "辅导员", "zh"], ["Matchmaker", "媒婆", "Old Man under the Moon", "月老", "zh"], ["Landlady", "包租婆", "Real estate agent", "房产中介", "zh"], ["Chef", "主厨", "Cook", "厨师", "en"]], "Sports and hobbies": [["Badminton", "羽毛球", "Tennis", "网球"], ["Skiing", "滑雪", "Skating", "滑冰", "en"], ["Painting", "绘画", "Drawing", "素描"], ["Basketball", "篮球", "Volleyball", "排球"], ["Soccer", "足球", "Rugby", "橄榄球"], ["Swimming", "游泳", "Diving", "潜水"], ["Yoga", "瑜伽", "Tai chi", "太极"], ["Chess", "国际象棋", "Go", "围棋", "zh"], ["Karaoke", "卡拉OK", "Concert", "演唱会"], ["Fishing", "钓鱼", "Camping", "露营"], ["Boxing", "拳击", "Kung fu", "功夫"], ["Ping pong", "乒乓球", "Billiards", "台球"], ["Running", "跑步", "Hiking", "徒步", "en"], ["Dancing", "跳舞", "Gymnastics", "体操"], ["Cycling", "骑自行车", "Horse riding", "骑马"], ["Surfing", "冲浪", "Skateboarding", "滑板"], ["Knitting", "织毛衣", "Sewing", "缝纫"], ["Mahjong", "麻将", "Poker", "扑克"], ["Bowling", "保龄球", "Golf", "高尔夫"], ["Jigsaw puzzle", "拼图", "Lego", "乐高"], ["Flying a kite", "放风筝", "Paper planes", "纸飞机"], ["Square dancing", "广场舞", "Aerobics", "健身操", "zh"], ["Shuttlecock kicking", "踢毽子", "Hopscotch", "跳房子", "zh"], ["Dou Dizhu", "斗地主", "Guandan", "掼蛋", "zh"]]};
+const BANK = {"Food and drink":[["Coffee","咖啡","Tea","茶"],["Dumpling","饺子","Wonton","馄饨"],["Pizza","披萨","Pie","馅饼"],["Ice cream","冰淇淋","Frozen yogurt","冻酸奶"],["Spaghetti","意大利面","Ramen","拉面"],["Milk","牛奶","Soy milk","豆浆"],["Butter","黄油","Cheese","奶酪"],["Honey","蜂蜜","Syrup","糖浆"],["Watermelon","西瓜","Cantaloupe","哈密瓜"],["Strawberry","草莓","Cherry","樱桃"],["Hot pot","火锅","Barbecue","烧烤"],["Sushi","寿司","Rice ball","饭团"],["Mooncake","月饼","Rice dumpling","粽子"],["Steamed bun","馒头","Bread","面包"],["Cola","可乐","Sparkling water","苏打水"],["Chocolate","巧克力","Candy","糖果"],["Vinegar","醋","Soy sauce","酱油"],["Orange","橙子","Tangerine","橘子"],["Bubble tea","珍珠奶茶","Milkshake","奶昔"],["Popcorn","爆米花","Potato chips","薯片"],["French fries","薯条","Hash browns","薯饼"],["Steamed stuffed bun","包子","Dumpling","饺子","zh"],["Fried dough stick","油条","Fried dough twist","麻花","zh"],["Stinky tofu","臭豆腐","Durian","榴莲","zh"],["Jianbing","煎饼果子","Roujiamo","肉夹馍","zh"],["Spicy gluten strips","辣条","Beef jerky","牛肉干","zh"],["Pancake","松饼","Waffle","华夫饼","en"]],"Animals":[["Cat","猫","Tiger","老虎"],["Butterfly","蝴蝶","Moth","飞蛾"],["Dolphin","海豚","Shark","鲨鱼"],["Rabbit","兔子","Hamster","仓鼠"],["Penguin","企鹅","Duck","鸭子"],["Horse","马","Zebra","斑马"],["Wolf","狼","Fox","狐狸"],["Crocodile","鳄鱼","Lizard","蜥蜴"],["Bee","蜜蜂","Mosquito","蚊子"],["Owl","猫头鹰","Eagle","老鹰"],["Frog","青蛙","Turtle","乌龟"],["Panda","熊猫","Koala","考拉"],["Giraffe","长颈鹿","Camel","骆驼"],["Goldfish","金鱼","Parrot","鹦鹉"],["Snake","蛇","Earthworm","蚯蚓"],["Sheep","绵羊","Goat","山羊","en"],["Squirrel","松鼠","Mouse","老鼠"],["Peacock","孔雀","Flamingo","火烈鸟"],["Spider","蜘蛛","Ant","蚂蚁"],["Octopus","章鱼","Jellyfish","水母"],["Magpie","喜鹊","Crow","乌鸦","zh"],["Dragon","龙","Phoenix","凤凰","zh"],["Qilin","麒麟","Unicorn","独角兽","zh"],["Alligator","短吻鳄","Crocodile","鳄鱼","en"]],"Places":[["Beach","海滩","Swimming pool","游泳池"],["Library","图书馆","Bookstore","书店"],["Hospital","医院","Pharmacy","药店"],["Cinema","电影院","Theater","剧院"],["Airport","机场","Train station","火车站"],["Hotel","酒店","Dormitory","宿舍"],["Supermarket","超市","Convenience store","便利店"],["Zoo","动物园","Aquarium","水族馆"],["Gym","健身房","Park","公园"],["Kindergarten","幼儿园","Playground","游乐场"],["Church","教堂","Temple","寺庙"],["Bank","银行","Post office","邮局"],["Restaurant","餐厅","Cafeteria","食堂"],["Museum","博物馆","Art gallery","美术馆"],["Elevator","电梯","Escalator","扶梯"],["Kitchen","厨房","Bathroom","浴室"],["Mountain","山","Island","岛"],["Desert","沙漠","Grassland","草原"],["Wedding","婚礼","Birthday party","生日派对"],["Classroom","教室","Office","办公室"],["Wet market","菜市场","Supermarket","超市","zh"],["Temple fair","庙会","Night market","夜市","zh"],["Bathhouse","澡堂","Hot spring","温泉","zh"],["Motel","汽车旅馆","Hotel","酒店","en"]],"Everyday objects":[["Pillow","枕头","Cushion","靠垫"],["Toothbrush","牙刷","Comb","梳子"],["Umbrella","雨伞","Raincoat","雨衣"],["Mirror","镜子","Window","窗户"],["Glasses","眼镜","Sunglasses","墨镜"],["Chopsticks","筷子","Fork","叉子"],["Scissors","剪刀","Knife","刀"],["Pen","钢笔","Chalk","粉笔","en"],["Key","钥匙","Password","密码"],["Wallet","钱包","Backpack","背包"],["Candle","蜡烛","Flashlight","手电筒"],["Socks","袜子","Gloves","手套"],["Phone","手机","Walkie-talkie","对讲机"],["Clock","时钟","Calendar","日历"],["Blanket","毯子","Towel","毛巾"],["Lipstick","口红","Crayon","蜡笔"],["Fan","风扇","Air conditioner","空调"],["Bottle","瓶子","Cup","杯子"],["Balloon","气球","Bubble","泡泡"],["Ladder","梯子","Stairs","楼梯","en"],["Red envelope","红包","Spring couplets","对联","zh"],["Abacus","算盘","Calculator","计算器","zh"],["Firecracker","鞭炮","Fireworks","烟花","zh"],["Mug","马克杯","Cup","杯子","en"]],"Jobs":[["Doctor","医生","Nurse","护士"],["Chef","厨师","Waiter","服务员"],["Teacher","老师","Coach","教练"],["Police officer","警察","Security guard","保安"],["Firefighter","消防员","Lifeguard","救生员"],["Pilot","飞行员","Flight attendant","空乘"],["Singer","歌手","Actor","演员"],["Dentist","牙医","Barber","理发师"],["Lawyer","律师","Judge","法官"],["Farmer","农民","Gardener","园丁"],["Journalist","记者","Writer","作家"],["Photographer","摄影师","Painter","画家"],["Magician","魔术师","Clown","小丑"],["Taxi driver","出租车司机","Delivery rider","外卖员"],["Programmer","程序员","Hacker","黑客"],["Astronaut","宇航员","Diver","潜水员"],["Tour guide","导游","Host","主持人"],["Vet","兽医","Zookeeper","饲养员"],["Cashier","收银员","Bank teller","银行柜员"],["Model","模特","Influencer","网红"],["Homeroom teacher","班主任","College counselor","辅导员","zh"],["Matchmaker","媒婆","Old Man under the Moon","月老","zh"],["Landlady","包租婆","Real estate agent","房产中介","zh"],["Chef","主厨","Cook","厨师","en"]],"Sports and hobbies":[["Badminton","羽毛球","Tennis","网球"],["Skiing","滑雪","Skating","滑冰","en"],["Painting","绘画","Drawing","素描"],["Basketball","篮球","Volleyball","排球"],["Soccer","足球","Rugby","橄榄球"],["Swimming","游泳","Diving","潜水"],["Yoga","瑜伽","Tai chi","太极"],["Chess","国际象棋","Go","围棋","zh"],["Karaoke","卡拉OK","Concert","演唱会"],["Fishing","钓鱼","Camping","露营"],["Boxing","拳击","Kung fu","功夫"],["Ping pong","乒乓球","Billiards","台球"],["Running","跑步","Hiking","徒步","en"],["Dancing","跳舞","Gymnastics","体操"],["Cycling","骑自行车","Horse riding","骑马"],["Surfing","冲浪","Skateboarding","滑板"],["Knitting","织毛衣","Sewing","缝纫"],["Mahjong","麻将","Poker","扑克"],["Bowling","保龄球","Golf","高尔夫"],["Jigsaw puzzle","拼图","Lego","乐高"],["Flying a kite","放风筝","Paper planes","纸飞机"],["Square dancing","广场舞","Aerobics","健身操","zh"],["Shuttlecock kicking","踢毽子","Hopscotch","跳房子","zh"],["Dou Dizhu","斗地主","Guandan","掼蛋","zh"]]};
+const TEST_URL = "one-phone.html";
 const LEVELS = [
   {n:1, title:"One spy", desc:"The spy has a different word.", min:4},
   {n:2, title:"One spy, two blanks", desc:"The spy has a different word. Two commoners have no word.", min:6},
@@ -87,240 +96,450 @@ const LEVELS = [
 
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
-
-let S = {
-  names: "Amy\nBen\nChloe\nDavid\nEmma\nFrank",
-  level: 1, cat: "All", lang: "en", startedBy: [],
-  used: [], scores: {}, ratings: store.get("wis-ratings", {}), game: null, held: false
-};
-
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const app = document.getElementById("app");
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-const players = () => S.names.split("\n").map(s=>s.trim()).filter(Boolean);
-const wordText = w => !w ? null : S.lang==="en" ? w.en : S.lang==="zh" ? w.zh : `${w.en} · ${w.zh}`;
 const pairKey = p => p[0]+"/"+p[2];
+const cleanName = s => String(s||"").replace(/\s+/g," ").trim().slice(0,20);
+// Codes avoid look-alike characters (0/O, 1/I/L).
+const DIG = "23456789", LET = "ABCDEFGHJKMNPQRSTUVWXYZ";
+const makeCode = () => [0,0,0,0].map(()=>DIG[Math.floor(Math.random()*DIG.length)]).join("") + [0,0].map(()=>LET[Math.floor(Math.random()*LET.length)]).join("");
+const inviteCode = (() => { try{ return (new URLSearchParams(location.search).get("c") || "").toUpperCase().replace(/[^0-9A-Z]/g,"").slice(0,6); }catch(e){ return ""; } })();
+const validCode = c => /^[2-9]{4}[A-HJKMNP-Z]{2}$/.test(c);
 
-function pickPair(){
-  const cats = S.cat==="All" ? Object.keys(BANK) : [S.cat];
-  // Pairs tagged "en" or "zh" only work in that language; Both mode uses untagged pairs only.
-  const fits = p => S.lang==="both" ? !p[4] : (!p[4] || p[4]===S.lang);
-  let pool = cats.flatMap(c => BANK[c]).filter(fits);
-  let fresh = pool.filter(p => !S.used.includes(pairKey(p)));
-  if(!fresh.length){ S.used = []; fresh = pool; }
-  // Thumbs-up pairs are picked more often; 1 in 5 games tries a pair with few ratings.
-  const rated = p => S.ratings[pairKey(p)] || {up:0, down:0};
-  let cand = fresh;
-  if(Math.random() < 0.2){ const few = fresh.filter(p => rated(p).up + rated(p).down < 3); if(few.length) cand = few; }
-  const weights = cand.map(p => Math.max(0.2, 1 + rated(p).up - rated(p).down));
-  let r = Math.random() * weights.reduce((a,b)=>a+b,0), i = 0;
-  while(r > weights[i]){ r -= weights[i]; i++; }
-  const p = cand[Math.min(i, cand.length-1)];
-  S.used.push(pairKey(p));
-  return p;
-}
+// ---- local state (this phone) ----
+const L = {
+  api: undefined,       // room namespace; undefined while loading, null if unavailable
+  R: null,              // named room for the club
+  code: null, name: "", isHost: false,
+  peers: [], me: null, connected: false, joinedAt: 0,
+  err: "", ratings: store.get("wis-ratings", {}), rated: {}
+};
+let H = null;           // host engine state, only on the host phone
+let lastPresence = "", lastHtml = "";
 
-function pickStarter(names){
-  let left = names.filter(n => !S.startedBy.includes(n));
-  if(!left.length){ S.startedBy = []; left = names.slice(); }
-  const n = left[Math.floor(Math.random()*left.length)];
-  S.startedBy.push(n);
-  return names.indexOf(n);
-}
-function newGame(){
-  const names = players();
-  const p = pickPair();
-  const A = {en:p[0], zh:p[1]}, B = {en:p[2], zh:p[3]};
-  const [com, spyW] = Math.random() < .5 ? [A,B] : [B,A];
-  const idx = shuffle(names.map((_,i)=>i));
-  const roles = names.map(n => ({name:n, role:"com", word:com}));
-  const L = S.level;
-  const spyCount = L >= 4 ? 2 : 1;
-  idx.slice(0, spyCount).forEach((k, j) => { roles[k].role = "spy"; roles[k].word = (L===4 && j===1) ? null : spyW; });
-  const rest = idx.slice(spyCount);
-  if(L===2) rest.slice(0,2).forEach(k => roles[k].word = null);
-  if(L===3 || L===5) rest.forEach(k => roles[k].word = null);
-  S.game = { pair:p, com, spyW, roles, alive:names.map(()=>true), round:1, phase:"pass", deal:0,
-             starter: pickStarter(names), votes:{}, voters:[], vi:0, cands:null, tieRound:false, lastOut:null, winner:null, rated:null };
-  render();
-}
-
-const g = () => S.game;
-const order = () => { const G=g(), n=G.roles.length, o=[]; for(let k=0;k<n;k++){ const i=(G.starter+k)%n; if(G.alive[i]) o.push(i); } return o; };
-
-function startVote(cands){
-  const G = g();
-  // In a tie-break the tied players don't vote; everyone else picks between them.
-  G.cands = cands; G.votes = {}; G.voters = order().filter(i => !G.tieRound || !cands.includes(i)); G.vi = 0;
-  if(!G.voters.length) return tally();
-  G.phase = "votepass"; render();
-}
-function castVote(target){
-  const G = g();
-  G.votes[target] = (G.votes[target]||0) + 1; G.vi++;
-  G.phase = G.vi >= G.voters.length ? "tally" : "votepass";
-  if(G.phase==="tally") tally(); else render();
-}
-function tally(){
-  const G = g();
-  if(!Object.keys(G.votes).length){ G.tieRound=false; G.lastOut=null; G.phase="nobody"; render(); return; }
-  const max = Math.max(...Object.values(G.votes));
-  const top = Object.keys(G.votes).filter(k => G.votes[k]===max).map(Number);
-  if(top.length > 1){
-    if(G.tieRound){ G.tieRound=false; G.lastOut=null; G.phase="nobody"; render(); return; }
-    G.tieRound = true; G.cands = top; G.phase = "tie"; render(); return;
+// ---- direct phone-to-phone link (public website) ----
+// The host phone registers the club code with the free PeerJS server; every other phone
+// connects straight to it. The host keeps everyone's "presence" and sends the full list back.
+const peerNet = {
+  kind: "peer",
+  join: async (_name, opt) => makePeerRoom(opt.code, opt.host)
+};
+function makePeerRoom(code, asHost){
+  const HOST_ID = "whoisspy-club-" + code;
+  const ls = [], cs = [];
+  let peer = null, myId = null, peers = new Map(), mine = {}, conns = new Map(), hostConn = null, connected = false, closed = false, retryT = null;
+  const snap = () => [...peers.entries()].map(([id, pr]) => ({peer:id, by:null, isMe:id===myId, sameTab:id===myId, kind:"viewer", guest:false, presence:pr, updatedAt:Date.now()}));
+  const emitPeers = () => { const s = snap(); ls.forEach(f => f({peers:s, joined:[], left:[], updated:[]})); };
+  const setConn = c => { if(connected !== c){ connected = c; cs.forEach(f => f(c)); } };
+  const list = () => [...peers.entries()];
+  const broadcast = () => conns.forEach(c => { if(c.open) try{ c.send({t:"peers", list:list()}); }catch(e){} });
+  function startHost(attempt){
+    peer = new Peer(HOST_ID);
+    peer.on("open", id => { myId = id; peers.set(id, mine); setConn(true); emitPeers(); });
+    peer.on("connection", c => {
+      c.on("open", () => { conns.set(c.peer, c); try{ c.send({t:"peers", list:list()}); }catch(e){} });
+      c.on("data", m => { if(m && m.t === "p" && m.pr && typeof m.pr === "object"){ peers.set(c.peer, m.pr); emitPeers(); broadcast(); } });
+      c.on("close", () => { conns.delete(c.peer); peers.delete(c.peer); emitPeers(); broadcast(); });
+      c.on("error", () => {});
+    });
+    peer.on("disconnected", () => { if(!closed) setTimeout(() => { try{ peer.reconnect(); }catch(e){} }, 1500); });
+    peer.on("error", e => {
+      // After a reload the server can hold the old host id for a few seconds: keep trying.
+      if(e.type === "unavailable-id" && attempt < 20 && !closed){ try{ peer.destroy(); }catch(x){} setTimeout(() => startHost(attempt + 1), 1500); }
+      else if(e.type === "network" || e.type === "server-error" || e.type === "socket-error") setConn(false);
+    });
   }
-  G.tieRound = false;
-  const out = top[0]; G.alive[out] = false; G.lastOut = out;
-  const spies = G.roles.filter((r,i)=>r.role==="spy" && G.alive[i]).length;
-  const living = G.alive.filter(Boolean).length;
-  if(spies===0) return finish("com");
-  if(living <= (spies>=2 ? 4 : 3)) return finish("spy");
-  G.phase = "out"; render();
-}
-function finish(side){
-  const G = g(); G.winner = side; G.phase = "over";
-  G.roles.forEach(r => { if(r.role===side) S.scores[r.name] = (S.scores[r.name]||0) + (side==="spy" ? 2 : 1); });
-  render();
-}
-function rate(v){
-  const G = g(), k = pairKey(G.pair); const r = S.ratings[k] || {up:0, down:0};
-  if(G.rated) r[G.rated]--; if(G.rated===v){ G.rated=null; } else { r[v]++; G.rated=v; }
-  S.ratings[k] = r; store.set("wis-ratings", S.ratings); render();
-}
-function nextRound(){ const G=g(); G.round++; G.phase="describe"; render(); }
-
-function render(){
-  const G = S.game;
-  if(!G) return setup();
-  const R = G.roles;
-  const nm = i => esc(R[i].name);
-  if(G.phase==="pass"){
-    const i = G.deal;
-    app.innerHTML = `<section class="card">
-      <span class="tag">Dealing words · ${i+1} of ${R.length}</span>
-      <h1>Pass the phone to ${nm(i)}</h1>
-      <p class="muted">Press and hold the box to see your word. Let go to hide it.</p>
-      <div class="reveal" id="rv" tabindex="0" role="button" aria-label="Hold to reveal your word">
-        <div id="rvt"><span class="muted">Hold here</span></div></div>
-      <button class="primary" id="nx">${i+1 < R.length ? "Got it, pass on" : "Got it, start round 1"}</button></section>`;
-    const rv = document.getElementById("rv"), t = document.getElementById("rvt");
-    const show = on => { rv.classList.toggle("on", on); t.innerHTML = on ? (R[i].word ? `<div class="word">${esc(wordText(R[i].word))}</div>` : `<div class="word">You have no word</div><p class="muted">你没有词 · listen and blend in</p>`) : `<span class="muted">Hold here</span>`; };
-    rv.addEventListener("pointerdown", e => { e.preventDefault(); show(true); });
-    ["pointerup","pointerleave","pointercancel"].forEach(ev => rv.addEventListener(ev, () => show(false)));
-    rv.addEventListener("keydown", e => { if(e.key===" "||e.key==="Enter"){ e.preventDefault(); show(true); } });
-    rv.addEventListener("keyup", () => show(false));
-    document.getElementById("nx").onclick = () => { G.deal++; if(G.deal >= R.length){ G.phase="describe"; } render(); };
-    return;
+  function dial(){
+    if(closed) return;
+    const c = peer.connect(HOST_ID, {reliable:true});
+    hostConn = c;
+    c.on("open", () => { setConn(true); try{ c.send({t:"p", pr:mine}); }catch(e){} });
+    c.on("data", m => {
+      if(m && m.t === "peers" && Array.isArray(m.list)){ peers = new Map(m.list); peers.set(myId, mine); emitPeers(); }
+    });
+    c.on("close", () => { setConn(false); peers = new Map([[myId, mine]]); emitPeers(); retry(); });
+    c.on("error", () => retry());
   }
-  if(G.phase==="describe"){
-    const o = order();
-    app.innerHTML = `<section class="card">
-      <span class="tag">Level ${S.level} · Round ${G.round}</span>
-      <h1>${G.alive[G.starter] ? `${nm(G.starter)} starts` : `${nm(G.starter)} is out`}</h1>
-      <p class="muted">${G.alive[G.starter] ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Each person says one clue about their own word, not a guess from what others said.</p>
-      <p class="tag">Still in the game</p>
-      <ul class="list">${R.map((r,i)=>`<li class="${G.alive[i]?"":"out"}"><span>${nm(i)}</span>${i===G.starter&&G.alive[i]?'<span class="chip">Starts</span>':''}</li>`).join("")}</ul>
-      <button class="primary" id="go">${G.round===1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button></section>`;
-    document.getElementById("go").onclick = () => G.round===1 ? nextRound() : startVote(order());
-    return;
+  function retry(){ if(closed || retryT) return; retryT = setTimeout(() => { retryT = null; if(!hostConn || !hostConn.open) dial(); }, 2500); }
+  function startPlayer(){
+    peer = new Peer();
+    peer.on("open", id => { myId = id; peers.set(id, mine); emitPeers(); dial(); });
+    peer.on("error", e => { if(e.type === "peer-unavailable"){ setConn(false); retry(); } });
+    peer.on("disconnected", () => { if(!closed) setTimeout(() => { try{ peer.reconnect(); }catch(e){} }, 1500); });
   }
-  if(G.phase==="votepass"){
-    const v = G.voters[G.vi];
-    const opts = G.cands.filter(i => i!==v);
-    app.innerHTML = `<section class="card">
-      <span class="tag">${G.tieRound ? "Tie-break vote" : "Secret vote"} · ${G.vi+1} of ${G.voters.length}</span>
-      <h1>${nm(v)}, who is the spy?</h1>
-      <p class="muted">Tap one name. Nobody will see who you picked.</p>
-      <div class="picks">${opts.map(i=>`<button class="pick" data-i="${i}">${nm(i)}</button>`).join("")}</div>
-      ${opts.length ? "" : `<button id="skip">Skip, nobody to vote for</button>`}</section>`;
-    app.querySelectorAll(".pick").forEach(b => b.onclick = () => castVote(+b.dataset.i));
-    const sk = document.getElementById("skip"); if(sk) sk.onclick = () => { G.vi++; G.vi>=G.voters.length ? tally() : render(); };
-    return;
-  }
-  if(G.phase==="tie"){
-    app.innerHTML = `<section class="card">
-      <span class="stamp">Tie vote</span>
-      <h1>${G.cands.map(nm).join(" and ")} are tied</h1>
-      <p class="muted">Only they describe their word once more. Then everyone else votes between just them. The tied players don't vote.</p>
-      <button class="primary" id="go">They've spoken, vote again</button></section>`;
-    document.getElementById("go").onclick = () => startVote(G.cands);
-    return;
-  }
-  if(G.phase==="nobody"){
-    app.innerHTML = `<section class="card"><span class="stamp">Tied again</span>
-      <h1>Nobody is out this round</h1><p class="muted">Play moves on to the next round.</p>
-      <button class="primary" id="go">Start round ${G.round+1}</button></section>`;
-    document.getElementById("go").onclick = nextRound; return;
-  }
-  if(G.phase==="out"){
-    app.innerHTML = `<section class="card"><span class="stamp">Voted out</span>
-      <h1>${nm(G.lastOut)} is out</h1>
-      <p class="muted">Their word stays secret until the game ends. The game goes on.</p>
-      <ol class="list">${R.map((r,i)=>`<li class="${G.alive[i]?"":"out"}"><span>${nm(i)}</span></li>`).join("")}</ol>
-      <button class="primary" id="go">Start round ${G.round+1}</button></section>`;
-    document.getElementById("go").onclick = nextRound; return;
-  }
-  if(G.phase==="over"){
-    const spy = G.winner==="spy";
-    const board = Object.entries(S.scores).sort((a,b)=>b[1]-a[1]);
-    app.innerHTML = `<section class="card">
-      <span class="stamp ${spy?"":"good"}">${spy ? "Spies win" : "Commoners win"}</span>
-      <h1>${G.lastOut!=null ? `${nm(G.lastOut)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "Every spy has been caught."}</h1>
-      <p class="muted">Commoner word: <b>${esc(wordText(G.com))}</b> · Spy word: <b>${esc(wordText(G.spyW))}</b></p>
-      <ul class="list">${R.map((r,i)=>`<li><span>${nm(i)} · ${r.word ? esc(wordText(r.word)) : "<i>blank</i>"}</span><span class="chip ${r.role==="spy"?"spy":""}">${r.role==="spy"?"Spy":"Commoner"}</span></li>`).join("")}</ul>
-    </section>
-    <section class="card"><h2>Fun pair?</h2>
-      <div class="thumbs"><button id="up" aria-pressed="${G.rated==="up"}">👍 Yes</button><button id="dn" aria-pressed="${G.rated==="down"}">👎 No</button></div>
-      <p class="muted">Ratings stay on this phone and help pick better pairs next time.</p></section>
-    <section class="card"><h2>Scoreboard</h2>
-      <p class="muted">Spy win: 2 points each. Commoner win: 1 point each.</p>
-      <ul class="list">${board.map(([n,s])=>`<li><span>${esc(n)}</span><span class="score">${s}</span></li>`).join("")}</ul>
-      <div class="row"><button class="primary" id="again">Play again</button><button id="setup">Change players or level</button></div>
-      <button id="reset">Reset scoreboard</button></section>`;
-    document.getElementById("up").onclick = () => rate("up");
-    document.getElementById("dn").onclick = () => rate("down");
-    document.getElementById("again").onclick = () => newGame();
-    document.getElementById("setup").onclick = () => { S.game=null; render(); };
-    document.getElementById("reset").onclick = () => { S.scores = {}; render(); };
-  }
-}
-
-function setup(){
-  const n = players().length, L = LEVELS[S.level-1];
-  app.innerHTML = `<section class="card">
-    <h1>Set up the table</h1>
-    <div class="field"><label for="names">Players, one name per line, any order</label>
-      <textarea id="names" spellcheck="false">${esc(S.names)}</textarea>
-      <span class="muted" id="cnt">${n} players</span></div>
-    <div class="field"><label>Level</label><div class="levels">${LEVELS.map(l=>`<button class="level" data-l="${l.n}" aria-pressed="${S.level===l.n}"><b>${l.n}</b><span>${l.title}<small>${l.desc} Suggested: ${l.min}+ players.</small></span></button>`).join("")}</div></div>
-    <div class="row">
-      <div class="field"><label for="cat">Category</label><select id="cat">${["All",...Object.keys(BANK)].map(c=>`<option ${c===S.cat?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
-      <div class="field"><label for="lang">Words in</label><select id="lang">
-        <option value="en" ${S.lang==="en"?"selected":""}>English</option><option value="zh" ${S.lang==="zh"?"selected":""}>中文</option><option value="both" ${S.lang==="both"?"selected":""}>Both</option></select></div>
-    </div>
-    <p class="warn" id="warn" ${n < L.min ? "" : "hidden"}>Level ${L.n} plays best with ${L.min} or more players. You can still play.</p>
-    <button class="primary" id="start" ${n < 3 ? "disabled" : ""}>Deal the words</button>
-    <p class="muted" id="need" ${n < 3 ? "" : "hidden"}>Add at least 3 players to start.</p></section>`;
-  const upd = () => { S.names = document.getElementById("names").value; const c = players().length, L2 = LEVELS[S.level-1];
-    document.getElementById("cnt").textContent = c + " players";
-    document.getElementById("warn").hidden = c >= L2.min; document.getElementById("start").disabled = c < 3; document.getElementById("need").hidden = c >= 3; };
-  document.getElementById("names").addEventListener("input", upd);
-  app.querySelectorAll(".level").forEach(b => b.onclick = () => { S.names = document.getElementById("names").value; S.level = +b.dataset.l; setup(); });
-  document.getElementById("cat").onchange = e => S.cat = e.target.value;
-  document.getElementById("lang").onchange = e => S.lang = e.target.value;
-  document.getElementById("start").onclick = () => {
-    const ps = players(); const seen = {};
-    S.names = ps.map(p => { seen[p] = (seen[p]||0)+1; return seen[p]>1 ? `${p} ${seen[p]}` : p; }).join("\n");
-    newGame();
+  asHost ? startHost(0) : startPlayer();
+  return {
+    name: HOST_ID,
+    onPeers(f){ ls.push(f); setTimeout(() => f({peers:snap(), joined:[], left:[], updated:[]}), 0); return () => {}; },
+    onConnection(f){ cs.push(f); setTimeout(() => f(connected), 0); return () => {}; },
+    peers: snap,
+    connected: () => connected,
+    async presence(patch){
+      for(const k in patch){ if(patch[k] === null) delete mine[k]; else mine[k] = patch[k]; }
+      mine = Object.assign({}, mine);
+      if(myId) peers.set(myId, mine);
+      if(asHost){ emitPeers(); broadcast(); }
+      else if(hostConn && hostConn.open){ try{ hostConn.send({t:"p", pr:mine}); }catch(e){} emitPeers(); }
+    },
+    async leave(){ closed = true; try{ if(hostConn) hostConn.close(); }catch(e){} try{ peer.destroy(); }catch(e){} }
   };
 }
 
-function start(data){ if(data && data.S){ S = Object.assign(S, data.S); } render(); }
-window.claude?.hot?.snapshot?.(() => ({S}));
-window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+// ---- room plumbing ----
+async function enter(code, name, asHost){
+  L.err = "";
+  if(!L.api){ L.err = "Not connected yet."; return render(); }
+  try{
+    L.R = await L.api.join("wis-" + code.toLowerCase(), {code, host: asHost});
+  }catch(e){ L.err = "Couldn't open the club (" + (e && e.code || "error") + "). Try again."; return render(); }
+  L.code = code; L.name = name; L.isHost = asHost; L.joinedAt = Date.now();
+  store.set("wis-me", {code, name, host: asHost});
+  L.R.onPeers(ch => { L.peers = ch.peers; const me = ch.peers.find(p => p.sameTab); if(me) L.me = me.peer; tick(); }, () => {});
+  L.R.onConnection(c => { L.connected = c; render(); }, () => {});
+  if(asHost){
+    const saved = store.get("wis-host", null);
+    H = saved && saved.code === code ? saved : newHost(code);
+  }
+  pushPresence();
+  render();
+  setTimeout(render, 6500);
+}
+async function leave(){
+  try{ if(L.R) await L.R.leave(); }catch(e){}
+  L.R = null; L.code = null; L.isHost = false; L.peers = []; H = null; lastPresence = ""; store.del("wis-me");
+  render();
+}
+function pushPresence(extra){
+  if(!L.R) return;
+  const p = Object.assign({n: L.name, h: L.isHost ? 1 : 0}, extra || {});
+  if(L.isHost && H) p.st = project();
+  const j = JSON.stringify(p);
+  if(j === lastPresence) return;
+  lastPresence = j;
+  L.R.presence(p).catch(() => {});
+}
+let myVote = null;   // {vid, t}
+function vote(target){ myVote = {vid: st().vid, t: target}; pushPresence({v: myVote}); render(); }
+
+// Called on every room change.
+function tick(){
+  if(L.isHost && H){ hostSync(); pushPresence(myVote ? {v: myVote} : null); }
+  render();
+}
+
+// ---- host engine ----
+function newHost(code){ return {code, level:1, cat:"All", lang:"en", scores:{}, startedBy:[], used:[], game:null}; }
+function saveHost(){ store.set("wis-host", H); }
+const present = () => L.peers.filter(p => p.kind === "viewer" && p.presence && cleanName(p.presence.n));
+function lobbyNames(){
+  const seen = {}, out = [];
+  present().forEach(p => { const b = cleanName(p.presence.n); seen[b] = (seen[b]||0)+1; out.push({p: p.peer, b, n: seen[b] > 1 ? b + " " + seen[b] : b}); });
+  return out;
+}
+function hostSync(){
+  const G = H.game; if(!G) return;
+  const here = new Set(present().map(p => p.peer));
+  // A player who reloaded comes back as a new peer with the same name: give them their seat back.
+  G.P.forEach(x => {
+    if(here.has(x.p)) return;
+    const back = present().find(p => cleanName(p.presence.n) === x.b && !G.P.some(y => y.p === p.peer));
+    if(back) x.p = back.peer;
+  });
+  if(G.ph === "vote"){
+    const votes = collectVotes();
+    const voters = G.P.filter(x => canVote(x) && here.has(x.p));
+    if(voters.length && voters.every(x => votes.has(x.p))) tally();
+  }
+}
+// In a tie-break the tied players don't vote; everyone else picks between them.
+const canVote = x => x.a && !(H.game.tie && H.game.cd.includes(x.p));
+function collectVotes(){
+  const G = H.game, m = new Map();
+  present().forEach(p => {
+    const v = p.presence.v, me = G.P.find(x => x.p === p.peer);
+    if(me && canVote(me) && v && v.vid === G.vid && G.cd.includes(v.t) && v.t !== p.peer) m.set(p.peer, v.t);
+  });
+  return m;
+}
+function pickPair(){
+  const cats = H.cat === "All" ? Object.keys(BANK) : [H.cat];
+  // Pairs tagged "en" or "zh" only work in that language; Both mode uses untagged pairs only.
+  const fits = p => H.lang === "both" ? !p[4] : (!p[4] || p[4] === H.lang);
+  const pool = cats.flatMap(c => BANK[c]).filter(fits);
+  let fresh = pool.filter(p => !H.used.includes(pairKey(p)));
+  if(!fresh.length){ H.used = []; fresh = pool; }
+  // Thumbs-up pairs are picked more often; 1 in 5 games tries a pair with few ratings.
+  const rated = p => L.ratings[pairKey(p)] || {up:0, down:0};
+  let cand = fresh;
+  if(Math.random() < 0.2){ const few = fresh.filter(p => rated(p).up + rated(p).down < 3); if(few.length) cand = few; }
+  const w = cand.map(p => Math.max(0.2, 1 + rated(p).up - rated(p).down));
+  let r = Math.random() * w.reduce((a,b)=>a+b,0), i = 0;
+  while(r > w[i]){ r -= w[i]; i++; }
+  const p = cand[Math.min(i, cand.length-1)];
+  H.used.push(pairKey(p));
+  return p;
+}
+const wordText = w => !w ? "" : H.lang === "en" ? w.en : H.lang === "zh" ? w.zh : `${w.en} · ${w.zh}`;
+function startGame(){
+  const ps = lobbyNames();
+  if(ps.length < 3) return;
+  const p = pickPair();
+  const A = {en:p[0], zh:p[1]}, B = {en:p[2], zh:p[3]};
+  const [com, spyW] = Math.random() < .5 ? [A,B] : [B,A];
+  const P = ps.map(x => ({p:x.p, b:x.b, n:x.n, r:"c", w:wordText(com), a:true}));
+  const idx = shuffle(P.map((_,i)=>i)), lv = H.level, spies = lv >= 4 ? 2 : 1;
+  idx.slice(0, spies).forEach((k, j) => { P[k].r = "s"; P[k].w = (lv === 4 && j === 1) ? "" : wordText(spyW); });
+  const rest = idx.slice(spies);
+  if(lv === 2) rest.slice(0,2).forEach(k => P[k].w = "");
+  if(lv === 3 || lv === 5) rest.forEach(k => P[k].w = "");
+  // Each game a different starter: random among players who haven't started yet in this club.
+  let left = P.filter(x => !H.startedBy.includes(x.n));
+  if(!left.length){ H.startedBy = []; left = P; }
+  const s = left[Math.floor(Math.random()*left.length)];
+  H.startedBy.push(s.n);
+  H.game = {gid: Date.now(), pk: pairKey(p), cw: wordText(com), sw: wordText(spyW), P, st: s.n, rd: 1, ph: "describe", vid: 0, cd: [], tie: false, lo: "", win: ""};
+  myVote = null; saveHost(); tick();
+}
+function startVote(cands){
+  const G = H.game; G.vid = Date.now(); G.cd = cands; G.ph = "vote"; myVote = null;
+  if(!G.P.some(canVote)) return tally();
+  saveHost(); tick();
+}
+function tally(){
+  const G = H.game, votes = collectVotes(), count = {};
+  votes.forEach(t => count[t] = (count[t]||0) + 1);
+  const keys = Object.keys(count);
+  if(!keys.length){ G.tie = false; G.lo = ""; G.ph = "nobody"; return done(); }
+  const max = Math.max(...Object.values(count)), top = keys.filter(k => count[k] === max);
+  if(top.length > 1){
+    if(G.tie){ G.tie = false; G.lo = ""; G.ph = "nobody"; return done(); }
+    G.tie = true; G.cd = top; G.ph = "tie"; return done();
+  }
+  G.tie = false;
+  const out = G.P.find(x => x.p === top[0]); out.a = false; G.lo = out.n;
+  const spies = G.P.filter(x => x.r === "s" && x.a).length, living = G.P.filter(x => x.a).length;
+  if(spies === 0) return finish("c");
+  if(living <= (spies >= 2 ? 4 : 3)) return finish("s");
+  G.ph = "out"; done();
+}
+function finish(side){
+  const G = H.game; G.win = side; G.ph = "over";
+  G.P.forEach(x => { if(x.r === side) H.scores[x.n] = (H.scores[x.n]||0) + (side === "s" ? 2 : 1); });
+  done();
+}
+function done(){ myVote = null; saveHost(); pushPresence(); render(); }
+function nextRound(){ const G = H.game; G.rd++; G.ph = "describe"; G.vid = 0; myVote = null; saveHost(); tick(); }
+
+// What the host shares with every phone (kept small: presence is capped at 4 KiB).
+function project(){
+  const G = H.game, base = {code:H.code, lv:H.level, lang:H.lang, cat:H.cat, sc:Object.entries(H.scores).sort((a,b)=>b[1]-a[1]).slice(0,30)};
+  if(!G || G.ph === "lobby") return Object.assign(base, {ph:"lobby", lob: lobbyNames().map(x => x.n).slice(0,40)});
+  const o = Object.assign(base, {ph:G.ph, gid:G.gid, rd:G.rd, st:G.st, vid:G.vid, cd:G.cd, tie:G.tie?1:0, lo:G.lo, win:G.win, pk:G.pk,
+    pl: G.P.map(x => [x.p, x.n, x.a?1:0]), w: Object.fromEntries(G.P.map(x => [x.p, x.w]))});
+  if(G.ph === "vote"){ const v = collectVotes(); o.nv = v.size; o.nt = G.P.filter(canVote).length; }
+  if(G.ph === "over"){ o.ro = Object.fromEntries(G.P.map(x => [x.p, x.r])); o.cw = G.cw; o.sw = G.sw; }
+  return o;
+}
+
+// ---- what every phone reads ----
+function hostPeer(){ return L.peers.find(p => p.presence && p.presence.h === 1 && p.presence.st && p.presence.st.code === L.code); }
+function st(){ if(L.isHost && H) return project(); const h = hostPeer(); return h ? h.presence.st : null; }
+
+// ---- screens ----
+const app = document.getElementById("app");
+function paint(html, bind){
+  if(html === lastHtml) return;
+  lastHtml = html; app.innerHTML = html; bind && bind();
+}
+function render(){
+  const net = document.getElementById("net");
+  net.innerHTML = L.code ? `<span class="dot ${L.connected ? "" : "off"}"></span>Club ${esc(L.code)}` : "";
+  if(!L.code) return home();
+  const S = st();
+  if(!S){
+    const late = Date.now() - L.joinedAt > 6000;
+    return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
+      <h1>${late ? "Can't find this club" : "Looking for the club…"}</h1>
+      <p class="muted">${late ? "Check the code with the host, and make sure the host's phone has this page open." : "Connecting to the host's phone."}</p>
+      <button id="lv">Back</button></section>`, () => { byId("lv").onclick = leave; });
+  }
+  const meIn = S.pl && S.pl.find(x => x[0] === L.me);
+  if(S.ph === "lobby") return lobby(S);
+  if(!meIn) return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
+    <h1>A game is on</h1><p class="muted">You'll be dealt in when the next game starts.</p>
+    ${board(S)}<button class="link" id="lv">Leave club</button></section>`, () => { byId("lv").onclick = leave; });
+  game(S, meIn);
+}
+const byId = id => document.getElementById(id);
+
+function home(){
+  const me = store.get("wis-me", null), saved = store.get("wis-host", null);
+  const ready = !!L.api, gone = L.api === null;
+  paint(`<section class="card">
+    <h1>Play with your friends, each on your own phone</h1>
+    ${gone ? `<p class="warn">Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.</p>` : ""}
+    ${!ready && !gone ? `<p class="muted">Connecting…</p>` : ""}
+    <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
+    ${me && me.code ? `<button class="primary" id="re" ${ready ? "" : "disabled"}>Rejoin club ${esc(me.code)}${me.host ? " as host" : ""}</button>` : ""}
+    <button class="${me && me.code ? "" : "primary"}" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
+    <div class="field"><label for="cd">Or join with a code</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="4827KX" value="${esc(inviteCode)}"></div>
+    <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
+    <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
+    <p class="muted">Only one phone? <a href="${TEST_URL}">Play the pass-the-phone version</a>.</p>
+  </section>`, () => {
+    const nm = () => cleanName(byId("nm").value);
+    const need = () => { if(!nm()){ L.err = "Type your name first."; lastHtml = ""; render(); return false; } L.name = nm(); return true; };
+    byId("mk").onclick = () => { if(!need()) return; store.del("wis-host"); enter(makeCode(), nm(), true); };
+    byId("jn").onclick = () => {
+      if(!need()) return;
+      const c = byId("cd").value.toUpperCase().replace(/[^0-9A-Z]/g,"");
+      if(!validCode(c)){ L.err = "A club code is 4 numbers and 2 letters, like 4827KX."; lastHtml = ""; return render(); }
+      enter(c, nm(), false);
+    };
+    const re = byId("re"); if(re) re.onclick = () => { const n = nm() || me.name; L.name = n; enter(me.code, n, !!(me.host && saved && saved.code === me.code)); };
+  });
+}
+
+function levelCard(n){ const l = LEVELS[n-1]; return `<b>${l.n}</b><span>${l.title}<small>${l.desc} Suggested: ${l.min}+ players.</small></span>`; }
+function lobby(S){
+  const names = S.lob || [], n = names.length, Lv = LEVELS[S.lv-1];
+  const list = `<ul class="list">${names.map(x => `<li><span>${esc(x)}</span></li>`).join("")}</ul>`;
+  if(!L.isHost) return paint(`<section class="card"><span class="tag">Club ${esc(S.code)}</span>
+    <h1>You're in. Waiting for the host to start</h1>
+    <p class="muted">Level ${S.lv}: ${esc(Lv.title)}. ${esc(Lv.desc)}</p>
+    <p class="tag">${n} in the club</p>${list}${board(S)}
+    <button class="link" id="lv">Leave club</button></section>`, () => { byId("lv").onclick = leave; });
+  paint(`<section class="card"><span class="tag">Your club code</span>
+    <div class="bigcode">${esc(S.code)}</div>
+    <p class="muted">Friends open this same page on their phone, tap <b>Join club</b> and type the code.${L.api && L.api.kind === "peer" ? "" : " Each friend needs access to the page first: add their email in the Share menu."}</p>
+    ${L.api && L.api.kind === "peer" ? `<button id="inv">Send invite link</button><p class="muted" id="invok" hidden>Link copied. Paste it in your group chat.</p>` : ""}
+    <p class="tag">${n} in the club</p>${list}</section>
+    <section class="card">
+    <div class="field"><label>Level</label><div class="levels">${LEVELS.map(l => `<button class="level" data-l="${l.n}" aria-pressed="${S.lv===l.n}">${levelCard(l.n)}</button>`).join("")}</div></div>
+    <div class="row">
+      <div class="field"><label for="cat">Category</label><select id="cat">${["All",...Object.keys(BANK)].map(c => `<option ${c===S.cat?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div class="field"><label for="lang">Words in</label><select id="lang">
+        <option value="en" ${S.lang==="en"?"selected":""}>English</option><option value="zh" ${S.lang==="zh"?"selected":""}>中文</option><option value="both" ${S.lang==="both"?"selected":""}>Both</option></select></div>
+    </div>
+    <p class="warn" ${n >= 3 && n < Lv.min ? "" : "hidden"}>Level ${Lv.n} plays best with ${Lv.min} or more players. You can still play.</p>
+    <button class="primary" id="go" ${n < 3 ? "disabled" : ""}>${n < 3 ? "Need at least 3 players" : "Deal the words"}</button>
+    </section>${S.sc.length ? `<section class="card">${board(S, true)}</section>` : ""}
+    <button class="link" id="lv">Close club</button>`, () => {
+    app.querySelectorAll(".level").forEach(b => b.onclick = () => { H.level = +b.dataset.l; saveHost(); tick(); });
+    byId("cat").onchange = e => { H.cat = e.target.value; saveHost(); tick(); };
+    byId("lang").onchange = e => { H.lang = e.target.value; saveHost(); tick(); };
+    byId("go").onclick = startGame;
+    const inv = byId("inv"); if(inv) inv.onclick = async () => {
+      const url = location.origin + location.pathname + "?c=" + S.code;
+      try{ if(navigator.share){ await navigator.share({title:"WhoIsSpy", text:"Join my WhoIsSpy club " + S.code, url}); return; } }catch(e){ return; }
+      try{ await navigator.clipboard.writeText(url); byId("invok").hidden = false; }catch(e){ prompt("Copy this link", url); }
+    };
+    byId("lv").onclick = () => { store.del("wis-host"); leave(); };
+    const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
+  });
+}
+function board(S, host){
+  if(!S.sc || !S.sc.length) return "";
+  return `<h2>Scoreboard</h2><p class="muted">Spy win: 2 points each. Commoner win: 1 point each.</p>
+    <ul class="list">${S.sc.map(([n,s]) => `<li><span>${esc(n)}</span><span class="score">${s}</span></li>`).join("")}</ul>
+    ${host && L.isHost ? `<button id="rs">Reset scoreboard</button>` : ""}`;
+}
+
+function game(S, meIn){
+  const nameOf = p => { const x = S.pl.find(y => y[0] === p); return x ? x[1] : "?"; };
+  const alive = meIn[2] === 1, myWord = S.w ? S.w[L.me] : "";
+  const starterIn = S.pl.some(x => x[1] === S.st && x[2] === 1);
+  const roster = `<ul class="list">${S.pl.map(x => `<li class="${x[2] ? "" : "out"}"><span>${esc(x[1])}${x[0]===L.me ? " (you)" : ""}</span>${x[1]===S.st && x[2] ? '<span class="chip">Starts</span>' : ""}</li>`).join("")}</ul>`;
+  const reveal = `<div class="reveal" id="rv" tabindex="0" role="button" aria-label="Hold to see your word"><div id="rvt"><span class="muted">Hold to see your word</span></div></div>`;
+  const tag = `<span class="tag">Level ${S.lv} · Round ${S.rd}${alive ? "" : " · You're out"}</span>`;
+  let body = "", host = "", bind = null;
+  if(S.ph === "describe"){
+    body = `${tag}<h1>${starterIn ? `${esc(S.st)} starts` : `${esc(S.st)} is out`}</h1>
+      <p class="muted">${starterIn ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Say one clue about your own word, out loud.</p>
+      ${alive ? reveal : `<p class="muted">You're out. Stay quiet and watch.</p>`}${roster}`;
+    host = `<button class="primary" id="hx">${S.rd === 1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button>`;
+    bind = () => { const b = byId("hx"); if(b) b.onclick = () => S.rd === 1 ? nextRound() : startVote(H.game.P.filter(x => x.a).map(x => x.p)); };
+  } else if(S.ph === "vote"){
+    const mine = myVote && myVote.vid === S.vid ? myVote.t : null;
+    const opts = S.cd.filter(p => p !== L.me);
+    const tied = S.tie && S.cd.includes(L.me), canV = alive && !tied;
+    body = `<span class="tag">${S.tie ? "Tie-break vote" : "Secret vote"} · Round ${S.rd}</span>
+      ${!alive ? `<h1>Voting</h1><p class="muted">You're out, so you don't vote this time.</p>`
+        : tied ? `<h1>Everyone else is voting</h1><p class="muted">You're one of the tied players, so you don't vote this time.</p>`
+        : mine ? `<h1>Vote in</h1><p class="muted">You picked ${esc(nameOf(mine))}. Waiting for everyone else. Tap another name to change it.</p>`
+        : `<h1>Who is the spy?</h1><p class="muted">Tap one name. Nobody will see who you picked.</p>`}
+      ${canV ? `<div class="picks">${opts.map(p => `<button class="pick" data-p="${esc(p)}" aria-pressed="${mine===p}" ${mine===p ? 'style="border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)"' : ""}>${esc(nameOf(p))}</button>`).join("")}</div>` : ""}
+      ${alive ? reveal : ""}`;
+    host = `<p class="muted">${S.nv} of ${S.nt} have voted. The result shows as soon as everyone has.</p><button id="hx">End the vote now</button>`;
+    bind = () => { app.querySelectorAll(".pick").forEach(b => b.onclick = () => vote(b.dataset.p)); const b = byId("hx"); if(b) b.onclick = tally; };
+  } else if(S.ph === "tie"){
+    body = `<span class="stamp">Tie vote</span><h1>${S.cd.map(p => esc(nameOf(p))).join(" and ")} are tied</h1>
+      <p class="muted">Only they describe their word once more. Then everyone else votes between just them. The tied players don't vote.</p>${alive ? reveal : ""}`;
+    host = `<button class="primary" id="hx">They've spoken, vote again</button>`;
+    bind = () => { const b = byId("hx"); if(b) b.onclick = () => startVote(H.game.cd); };
+  } else if(S.ph === "nobody"){
+    body = `<span class="stamp">Tied again</span><h1>Nobody is out this round</h1><p class="muted">Play moves on to the next round.</p>`;
+    host = `<button class="primary" id="hx">Start round ${S.rd + 1}</button>`;
+    bind = () => { const b = byId("hx"); if(b) b.onclick = nextRound; };
+  } else if(S.ph === "out"){
+    body = `<span class="stamp">Voted out</span><h1>${esc(S.lo)} is out</h1>
+      <p class="muted">${S.lo === meIn[1] ? "That's you. Keep your word to yourself until the end." : "Their word stays secret until the game ends. The game goes on."}</p>${roster}`;
+    host = `<button class="primary" id="hx">Start round ${S.rd + 1}</button>`;
+    bind = () => { const b = byId("hx"); if(b) b.onclick = nextRound; };
+  } else if(S.ph === "over"){
+    return over(S);
+  }
+  paint(`<section class="card">${body}${L.isHost ? `<div class="hostbar"><span class="tag">Host</span>${host}</div>` : ""}</section>`, () => {
+    bind && bind();
+    const rv = byId("rv"), t = byId("rvt");
+    if(!rv) return;
+    const show = on => { rv.classList.toggle("on", on); t.innerHTML = on ? (myWord ? `<div class="word">${esc(myWord)}</div>` : `<div class="word">You have no word</div><p class="muted">你没有词 · listen and blend in</p>`) : `<span class="muted">Hold to see your word</span>`; };
+    rv.addEventListener("pointerdown", e => { e.preventDefault(); show(true); });
+    ["pointerup","pointerleave","pointercancel"].forEach(ev => rv.addEventListener(ev, () => show(false)));
+    rv.addEventListener("contextmenu", e => e.preventDefault());
+    rv.addEventListener("keydown", e => { if(e.key === " " || e.key === "Enter"){ e.preventDefault(); show(true); } });
+    rv.addEventListener("keyup", () => show(false));
+  });
+}
+
+function over(S){
+  const spy = S.win === "s", r = L.rated[S.gid] || null;
+  paint(`<section class="card">
+    <span class="stamp ${spy ? "" : "good"}">${spy ? "Spies win" : "Commoners win"}</span>
+    <h1>${S.lo ? `${esc(S.lo)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "Every spy has been caught."}</h1>
+    <p class="muted">Commoner word: <b>${esc(S.cw)}</b> · Spy word: <b>${esc(S.sw)}</b></p>
+    <ul class="list">${S.pl.map(x => `<li><span>${esc(x[1])} · ${S.w[x[0]] ? esc(S.w[x[0]]) : "<i>blank</i>"}</span><span class="chip ${S.ro[x[0]]==="s" ? "spy" : ""}">${S.ro[x[0]]==="s" ? "Spy" : "Commoner"}</span></li>`).join("")}</ul>
+  </section>
+  <section class="card"><h2>Fun pair?</h2>
+    <div class="thumbs"><button id="up" aria-pressed="${r==="up"}">👍 Yes</button><button id="dn" aria-pressed="${r==="down"}">👎 No</button></div>
+    <p class="muted">For now ratings stay on your phone. Later they'll count across all clubs.</p></section>
+  <section class="card">${board(S, true)}
+    ${L.isHost ? `<div class="row"><button class="primary" id="again">Play again</button><button id="lob">Change level</button></div>` : `<p class="muted">The host starts the next game.</p>`}
+  </section>`, () => {
+    const rate = v => {
+      const k = S.pk, cur = L.ratings[k] || {up:0, down:0}, was = L.rated[S.gid];
+      if(was) cur[was]--; if(was === v){ L.rated[S.gid] = null; } else { cur[v]++; L.rated[S.gid] = v; }
+      L.ratings[k] = cur; store.set("wis-ratings", L.ratings); render();
+    };
+    byId("up").onclick = () => rate("up"); byId("dn").onclick = () => rate("down");
+    const a = byId("again"); if(a) a.onclick = startGame;
+    const lb = byId("lob"); if(lb) lb.onclick = () => { H.game = null; saveHost(); tick(); };
+    const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
+  });
+}
+
+// ---- boot ----
+render();
+(async () => {
+  let api = null;
+  if(window.Peer) api = peerNet;
+  else try{ api = window.claude && window.claude.use ? await window.claude.use("room") : null; }catch(e){ api = null; }
+  L.api = api;
+  render();
+})();
 </script>
 
 </body>
