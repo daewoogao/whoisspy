@@ -174,10 +174,11 @@ function tally(){
   }
   G.tieRound = false;
   const out = top[0]; G.alive[out] = false; G.lastOut = out;
-  const spies = G.roles.filter((r,i)=>r.role==="spy" && G.alive[i]).length;
+  // Any spy voted out ends the game. Otherwise spies win at 2 players left (one spy) or 3 (two spies).
+  if(G.roles[out].role==="spy") return finish("com");
+  const spies = G.roles.filter(r=>r.role==="spy").length;
   const living = G.alive.filter(Boolean).length;
-  if(spies===0) return finish("com");
-  if(living <= (spies>=2 ? 4 : 3)) return finish("spy");
+  if(living <= (spies>=2 ? 3 : 2)) return finish("spy");
   G.phase = "out"; render();
 }
 function finish(side){
@@ -268,7 +269,7 @@ function render(){
     const board = Object.entries(S.scores).sort((a,b)=>b[1]-a[1]);
     app.innerHTML = `<section class="card">
       <span class="stamp ${spy?"":"good"}">${spy ? "Spies win" : "Commoners win"}</span>
-      <h1>${G.lastOut!=null ? `${nm(G.lastOut)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "Every spy has been caught."}</h1>
+      <h1>${G.lastOut!=null ? `${nm(G.lastOut)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "A spy has been caught."}</h1>
       <p class="muted">Commoner word: <b>${esc(wordText(G.com))}</b> · Spy word: <b>${esc(wordText(G.spyW))}</b></p>
       <ul class="list">${R.map((r,i)=>`<li><span>${nm(i)} · ${r.word ? esc(wordText(r.word)) : "<i>blank</i>"}</span><span class="chip ${r.role==="spy"?"spy":""}">${r.role==="spy"?"Spy":"Commoner"}</span></li>`).join("")}</ul>
     </section>
