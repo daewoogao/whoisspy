@@ -211,6 +211,7 @@ async function enter(code, name, asHost){
 async function leave(){
   try{ if(L.R) await L.R.leave(); }catch(e){}
   L.R = null; L.code = null; L.isHost = false; L.peers = []; H = null; lastPresence = ""; store.del("wis-me");
+  L.skipInvite = true;
   render();
 }
 function pushPresence(extra){
@@ -380,6 +381,8 @@ const byId = id => document.getElementById(id);
 function home(){
   const me = store.get("wis-me", null), saved = store.get("wis-host", null);
   const ready = !!L.api, gone = L.api === null;
+  // Opened from an invite link: just ask for a name and go straight into that club.
+  if(validCode(inviteCode) && !L.skipInvite && !(me && me.host && me.code === inviteCode) && !gone) return invited(me, ready);
   paint(`<section class="card">
     <h1>Play with your friends, each on your own phone</h1>
     ${gone ? `<p class="warn">Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.</p>` : ""}
@@ -405,6 +408,28 @@ function home(){
   });
 }
 
+function invited(me, ready){
+  paint(`<section class="card">
+    <span class="tag">You're invited</span>
+    <h1>Join club ${esc(inviteCode)}</h1>
+    <p class="muted">Type your name and you're in. The host starts the game.</p>
+    <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" enterkeyhint="go" value="${esc(L.name || (me && me.name) || "")}"></div>
+    <button class="primary" id="jn" ${ready ? "" : "disabled"}>${ready ? "Join the game" : "Connecting…"}</button>
+    <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
+    <button class="link" id="other">Create my own club instead</button>
+  </section>`, () => {
+    const go = () => {
+      const n = cleanName(byId("nm").value);
+      if(!n){ L.err = "Type your name first."; lastHtml = ""; return render(); }
+      if(!L.api) return;
+      L.name = n; L.err = ""; enter(inviteCode, n, false);
+    };
+    byId("jn").onclick = go;
+    byId("nm").addEventListener("keydown", e => { if(e.key === "Enter") go(); });
+    byId("other").onclick = () => { L.name = cleanName(byId("nm").value) || L.name; L.skipInvite = true; lastHtml = ""; render(); };
+    if(!byId("nm").value) byId("nm").focus();
+  });
+}
 function levelCard(n){ const l = LEVELS[n-1]; return `<b>${l.n}</b><span>${l.title}<small>${l.desc} Suggested: ${l.min}+ players.</small></span>`; }
 function lobby(S){
   const names = S.lob || [], n = names.length, Lv = LEVELS[S.lv-1];
