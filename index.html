@@ -24,6 +24,12 @@ html,body{min-height:100%}
 body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--body); padding-inline:16px; padding-block:20px; margin:0}
 .wrap{max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:16px}
 header{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.hdr{display:flex; align-items:center; gap:10px}
+.rulesbtn{font:800 13px/1 var(--body); padding:8px 12px; border-radius:999px}
+.rules h2{margin-top:6px}
+.rules ul,.rules ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px}
+.rules table{border-collapse:collapse; width:100%; font-size:14px}
+.rules td,.rules th{border-bottom:1px solid var(--line); padding:6px 4px; text-align:left; vertical-align:top}
 .logo{font:800 22px/1 var(--display); letter-spacing:-.01em}
 .logo span{color:var(--stamp)}
 .tag{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:800}
@@ -78,7 +84,7 @@ a{color:var(--accent)}
 </head>
 <body>
 <div class="wrap">
-  <header><div class="logo">Who<span>Is</span>Spy</div><div class="tag" id="net"></div></header>
+  <header><div class="logo">Who<span>Is</span>Spy</div><div class="hdr"><span class="tag" id="net"></span><button class="rulesbtn" id="rulesBtn">Rules</button></div></header>
   <main id="app" aria-live="polite"></main>
   <p class="foot">Everyone opens this page on their own phone. One person creates the club, the rest join with its code.</p>
 </div>
@@ -197,7 +203,8 @@ async function enter(code, name, asHost){
     L.R = await L.api.join("wis-" + code.toLowerCase(), {code, host: asHost});
   }catch(e){ L.err = "Couldn't open the club (" + (e && e.code || "error") + "). Try again."; return render(); }
   L.code = code; L.name = name; L.isHost = asHost; L.joinedAt = Date.now();
-  store.set("wis-me", {code, name, host: asHost});
+  store.set("wis-me", {code, name, host: asHost, at: Date.now()});
+  L.skipInvite = true;
   L.R.onPeers(ch => { L.peers = ch.peers; const me = ch.peers.find(p => p.sameTab); if(me) L.me = me.peer; tick(); }, () => {});
   L.R.onConnection(c => { L.connected = c; render(); }, () => {});
   if(asHost){
@@ -210,6 +217,7 @@ async function enter(code, name, asHost){
 }
 async function leave(){
   try{ if(L.R) await L.R.leave(); }catch(e){}
+  const was = store.get("wis-me", null); if(was) store.set("wis-last", Object.assign(was, {at: Date.now()}));
   L.R = null; L.code = null; L.isHost = false; L.peers = []; H = null; lastPresence = ""; store.del("wis-me");
   L.skipInvite = true;
   render();
@@ -221,6 +229,7 @@ function pushPresence(extra){
   const j = JSON.stringify(p);
   if(j === lastPresence) return;
   lastPresence = j;
+  const me = store.get("wis-me", null); if(me && me.code === L.code) store.set("wis-me", Object.assign(me, {at: Date.now()}));
   L.R.presence(p).catch(() => {});
 }
 let myVote = null;   // {vid, t}
@@ -360,6 +369,8 @@ function paint(html, bind){
 function render(){
   const net = document.getElementById("net");
   net.innerHTML = L.code ? `<span class="dot ${L.connected ? "" : "off"}"></span>Club ${esc(L.code)}` : "";
+  const rb = byId("rulesBtn"); if(rb) rb.textContent = L.showRules ? "Close rules" : "Rules";
+  if(L.showRules) return rules();
   if(!L.code) return home();
   const S = st();
   if(!S){
@@ -373,13 +384,27 @@ function render(){
   if(S.ph === "lobby") return lobby(S);
   if(!meIn) return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
     <h1>A game is on</h1><p class="muted">You'll be dealt in when the next game starts.</p>
-    ${board(S)}<button class="link" id="lv">Leave club</button></section>`, () => { byId("lv").onclick = leave; });
+    ${board(S)}<button class="link" id="lv">Leave club</button></section>`, () => { sureLeave(byId("lv"), leave); });
   game(S, meIn);
 }
 const byId = id => document.getElementById(id);
+// Leaving takes two taps, so nobody leaves the club by accident.
+function sureLeave(btn, then){
+  if(!btn) return;
+  btn.onclick = () => {
+    if(btn.dataset.sure){ then(); return; }
+    btn.dataset.sure = "1"; const was = btn.textContent; btn.textContent = "Tap again to leave";
+    setTimeout(() => { if(btn.isConnected){ delete btn.dataset.sure; btn.textContent = was; } }, 3000);
+  };
+}
 
+const FRESH = 3 * 60 * 60 * 1000;
+function lastClub(){
+  const me = store.get("wis-me", null) || store.get("wis-last", null);
+  return me && me.code && (!me.at || Date.now() - me.at < FRESH) ? me : null;
+}
 function home(){
-  const me = store.get("wis-me", null), saved = store.get("wis-host", null);
+  const me = lastClub(), saved = store.get("wis-host", null);
   const ready = !!L.api, gone = L.api === null;
   // Opened from an invite link: just ask for a name and go straight into that club.
   if(validCode(inviteCode) && !L.skipInvite && !(me && me.host && me.code === inviteCode) && !gone) return invited(me, ready);
@@ -388,8 +413,8 @@ function home(){
     ${gone ? `<p class="warn">Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.</p>` : ""}
     ${!ready && !gone ? `<p class="muted">Connecting…</p>` : ""}
     <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
-    ${me && me.code ? `<button class="primary" id="re" ${ready ? "" : "disabled"}>Rejoin club ${esc(me.code)}${me.host ? " as host" : ""}</button>` : ""}
-    <button class="${me && me.code ? "" : "primary"}" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
+    ${me ? `<button class="primary" id="re" ${ready ? "" : "disabled"}>Back to club ${esc(me.code)}${me.host ? " (you're the host)" : ""}</button>` : ""}
+    <button class="${me ? "" : "primary"}" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
     <div class="field"><label for="cd">Or join with a code</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
     <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
@@ -397,7 +422,7 @@ function home(){
   </section>`, () => {
     const nm = () => cleanName(byId("nm").value);
     const need = () => { if(!nm()){ L.err = "Type your name first."; lastHtml = ""; render(); return false; } L.name = nm(); return true; };
-    byId("mk").onclick = () => { if(!need()) return; store.del("wis-host"); enter(makeCode(), nm(), true); };
+    byId("mk").onclick = () => { if(!need()) return; store.del("wis-host"); store.del("wis-last"); enter(makeCode(), nm(), true); };
     byId("jn").onclick = () => {
       if(!need()) return;
       const c = byId("cd").value.toUpperCase().replace(/[^0-9A-Z]/g,"");
@@ -405,6 +430,7 @@ function home(){
       enter(c, nm(), false);
     };
     const re = byId("re"); if(re) re.onclick = () => { const n = nm() || me.name; L.name = n; enter(me.code, n, !!(me.host && saved && saved.code === me.code)); };
+    // A new club replaces the old host state only once the host actually creates it.
   });
 }
 
@@ -430,6 +456,41 @@ function invited(me, ready){
     if(!byId("nm").value) byId("nm").focus();
   });
 }
+function rules(){
+  const S = L.code ? st() : null;
+  paint(`<section class="card rules">
+    <h1>How to play</h1>
+    <p>Everyone gets a secret word. Most players (the <b>commoners</b>) share the same word. The <b>spy</b> has a different but similar word, or no word at all, and doesn't know they're the spy. Find the spy before the spy outlasts you.</p>
+    <h2>Each round</h2>
+    <ol>
+      <li>Hold the box to see your word. Don't show anyone.</li>
+      <li>The app names who starts. Go clockwise. Each person says <b>one clue</b> about their own word, out loud. Don't say the word itself.</li>
+      <li>Round 1 has no vote. From round 2 on, everyone still in votes in secret for who they think the spy is.</li>
+      <li>The player with the most votes is out. Their word stays secret until the game ends. Players who are out stay quiet and don't vote.</li>
+    </ol>
+    <h2>Ties</h2>
+    <p>If two or more players tie, only they describe their word once more. Then everyone else votes between just them; the tied players don't vote. If it ties again, nobody is out this round.</p>
+    <h2>Who wins</h2>
+    <ul>
+      <li><b>One spy (levels 1 to 3):</b> commoners win when the spy is voted out. The spy wins if only 2 players are left.</li>
+      <li><b>Two spies (levels 4 and 5):</b> commoners win when both spies are voted out. The spies win if only 3 players are left.</li>
+    </ul>
+    <h2>Levels</h2>
+    <table><tr><th>Level</th><th>What's dealt</th></tr>
+      ${LEVELS.map(l => `<tr><td>${l.n}. ${esc(l.title)}</td><td>${esc(l.desc)} Best with ${l.min}+ players.</td></tr>`).join("")}
+    </table>
+    <p class="muted">"Blank" means you see no word. Listen to the others and blend in.</p>
+    <h2>Points</h2>
+    <p>Spies win: 2 points for each spy. Commoners win: 1 point for every commoner, including blanks and anyone voted out earlier.</p>
+    <h2>Tips</h2>
+    <ul>
+      <li>Be vague enough that the spy can't guess your word, but clear enough that your team trusts you.</li>
+      <li>If your clue sounds odd next to everyone else's, you might be the spy. Blend in!</li>
+    </ul>
+    <button class="primary" id="rb">${S ? "Back to the game" : "Got it"}</button>
+  </section>`, () => { byId("rb").onclick = closeRules; });
+}
+function closeRules(){ L.showRules = false; lastHtml = ""; window.scrollTo(0,0); render(); }
 function levelCard(n){ const l = LEVELS[n-1]; return `<b>${l.n}</b><span>${l.title}<small>${l.desc} Suggested: ${l.min}+ players.</small></span>`; }
 function lobby(S){
   const names = S.lob || [], n = names.length, Lv = LEVELS[S.lv-1];
@@ -438,7 +499,7 @@ function lobby(S){
     <h1>You're in. Waiting for the host to start</h1>
     <p class="muted">Level ${S.lv}: ${esc(Lv.title)}. ${esc(Lv.desc)}</p>
     <p class="tag">${n} in the club</p>${list}${board(S)}
-    <button class="link" id="lv">Leave club</button></section>`, () => { byId("lv").onclick = leave; });
+    <button class="link" id="lv">Leave club</button></section>`, () => { sureLeave(byId("lv"), leave); });
   paint(`<section class="card"><span class="tag">Your club code</span>
     <div class="bigcode">${esc(S.code)}</div>
     <p class="muted">Friends open this same page on their phone, tap <b>Join club</b> and type the code.${L.api && L.api.kind === "peer" ? "" : " Each friend needs access to the page first: add their email in the Share menu."}</p>
@@ -472,7 +533,7 @@ function lobby(S){
       try{ await navigator.share({title:"WhoIsSpy", text:"Join my WhoIsSpy club " + S.code, url: inviteUrl(S.code)}); }
       catch(e){ if(e && e.name !== "AbortError"){ L.invMsg = "Sharing didn't work here. Use Copy link instead."; lastHtml = ""; render(); } }
     };
-    byId("lv").onclick = () => { store.del("wis-host"); leave(); };
+    sureLeave(byId("lv"), leave);
     const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
   });
 }
@@ -567,6 +628,8 @@ function over(S){
 }
 
 // ---- boot ----
+byId("rulesBtn").onclick = () => { L.showRules ? closeRules() : (L.showRules = true, lastHtml = "", window.scrollTo(0,0), render()); };
+try{ if(new URLSearchParams(location.search).has("rules")) L.showRules = true; }catch(e){}
 render();
 (async () => {
   let api = null;
@@ -574,6 +637,10 @@ render();
   else try{ api = window.claude && window.claude.use ? await window.claude.use("room") : null; }catch(e){ api = null; }
   L.api = api;
   render();
+  // Came back after closing the page or losing the connection: go straight back into the club.
+  const me = store.get("wis-me", null), saved = store.get("wis-host", null);
+  if(api && me && me.code && me.name && (!me.at || Date.now() - me.at < FRESH) && !L.code && (!validCode(inviteCode) || inviteCode === me.code))
+    enter(me.code, me.name, !!(me.host && saved && saved.code === me.code));
 })();
 </script>
 
