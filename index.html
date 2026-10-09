@@ -107,6 +107,7 @@ const cleanName = s => String(s||"").replace(/\s+/g," ").trim().slice(0,20);
 const DIG = "23456789", LET = "ABCDEFGHJKMNPQRSTUVWXYZ";
 const makeCode = () => [0,0,0,0].map(()=>DIG[Math.floor(Math.random()*DIG.length)]).join("") + [0,0].map(()=>LET[Math.floor(Math.random()*LET.length)]).join("");
 const inviteCode = (() => { try{ return (new URLSearchParams(location.search).get("c") || "").toUpperCase().replace(/[^0-9A-Z]/g,"").slice(0,6); }catch(e){ return ""; } })();
+const inviteUrl = code => location.origin + location.pathname + "?c=" + code;
 const validCode = c => /^[2-9]{4}[A-HJKMNP-Z]{2}$/.test(c);
 
 // ---- local state (this phone) ----
@@ -416,7 +417,8 @@ function lobby(S){
   paint(`<section class="card"><span class="tag">Your club code</span>
     <div class="bigcode">${esc(S.code)}</div>
     <p class="muted">Friends open this same page on their phone, tap <b>Join club</b> and type the code.${L.api && L.api.kind === "peer" ? "" : " Each friend needs access to the page first: add their email in the Share menu."}</p>
-    ${L.api && L.api.kind === "peer" ? `<button id="inv">Send invite link</button><p class="muted" id="invok" hidden>Link copied. Paste it in your group chat.</p>` : ""}
+    ${L.api && L.api.kind === "peer" ? `<div class="field"><label for="invurl">Invite link</label><input id="invurl" readonly value="${esc(inviteUrl(S.code))}"></div>
+    <div class="row"><button id="inv">Copy link</button>${navigator.share ? `<button id="shr">Share…</button>` : ""}</div><p class="muted" id="invok" ${L.invMsg ? "" : "hidden"}>${esc(L.invMsg || "")}</p>` : ""}
     <p class="tag">${n} in the club</p>${list}</section>
     <section class="card">
     <div class="field"><label>Level</label><div class="levels">${LEVELS.map(l => `<button class="level" data-l="${l.n}" aria-pressed="${S.lv===l.n}">${levelCard(l.n)}</button>`).join("")}</div></div>
@@ -434,9 +436,16 @@ function lobby(S){
     byId("lang").onchange = e => { H.lang = e.target.value; saveHost(); tick(); };
     byId("go").onclick = startGame;
     const inv = byId("inv"); if(inv) inv.onclick = async () => {
-      const url = location.origin + location.pathname + "?c=" + S.code;
-      try{ if(navigator.share){ await navigator.share({title:"WhoIsSpy", text:"Join my WhoIsSpy club " + S.code, url}); return; } }catch(e){ return; }
-      try{ await navigator.clipboard.writeText(url); byId("invok").hidden = false; }catch(e){ prompt("Copy this link", url); }
+      const url = inviteUrl(S.code), box = byId("invurl");
+      let copied = false;
+      try{ await navigator.clipboard.writeText(url); copied = true; }catch(e){}
+      if(!copied){ try{ box.focus(); box.select(); box.setSelectionRange(0, url.length); copied = document.execCommand("copy"); }catch(e){} }
+      L.invMsg = copied ? "Link copied. Paste it in your group chat." : "Press and hold the link above to copy it.";
+      lastHtml = ""; render();
+    };
+    const shr = byId("shr"); if(shr) shr.onclick = async () => {
+      try{ await navigator.share({title:"WhoIsSpy", text:"Join my WhoIsSpy club " + S.code, url: inviteUrl(S.code)}); }
+      catch(e){ if(e && e.name !== "AbortError"){ L.invMsg = "Sharing didn't work here. Use Copy link instead."; lastHtml = ""; render(); } }
     };
     byId("lv").onclick = () => { store.del("wis-host"); leave(); };
     const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
