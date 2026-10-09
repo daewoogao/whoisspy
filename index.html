@@ -416,7 +416,7 @@ function invited(me, ready){
     <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" enterkeyhint="go" value="${esc(L.name || (me && me.name) || "")}"></div>
     <button class="primary" id="jn" ${ready ? "" : "disabled"}>${ready ? "Join the game" : "Connecting…"}</button>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
-    <button class="link" id="other">Create my own club instead</button>
+    <button class="link" id="other">Join with a code or create a club instead</button>
   </section>`, () => {
     const go = () => {
       const n = cleanName(byId("nm").value);
