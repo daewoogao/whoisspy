@@ -390,7 +390,7 @@ function home(){
     <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
     ${me && me.code ? `<button class="primary" id="re" ${ready ? "" : "disabled"}>Rejoin club ${esc(me.code)}${me.host ? " as host" : ""}</button>` : ""}
     <button class="${me && me.code ? "" : "primary"}" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
-    <div class="field"><label for="cd">Or join with a code</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="4827KX" value="${esc(inviteCode)}"></div>
+    <div class="field"><label for="cd">Or join with a code</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
     <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
     <p class="muted">Only one phone? <a href="${TEST_URL}">Play the pass-the-phone version</a>.</p>
