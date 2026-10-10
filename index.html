@@ -391,7 +391,7 @@ function render(){
 }
 const byId = id => document.getElementById(id);
 const FRESH = 3 * 60 * 60 * 1000;
-// The last club this phone was in, so its code is ready to type again.
+// The last name used on this phone, filled in for convenience.
 function lastClub(){
   const me = store.get("wis-me", null);
   return me && me.code && (!me.at || Date.now() - me.at < FRESH) ? me : null;
@@ -409,7 +409,7 @@ function home(){
     ${!ready && !gone ? `<p class="muted">Connecting…</p>` : ""}
     <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
     <button class="primary" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
-    <div class="field"><label for="cd">Or join a friend's club</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(me ? me.code : "")}"></div>
+    <div class="field"><label for="cd">Or join a friend's club</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
     <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
     <p class="muted">Dropped out of a game? Type the same code and name to get your seat back.</p>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
