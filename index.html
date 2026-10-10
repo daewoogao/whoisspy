@@ -74,6 +74,11 @@ button:disabled{opacity:.45; cursor:default}
 .hostbar{border-top:1px dashed var(--line); padding-top:14px; display:flex; flex-direction:column; gap:10px}
 .dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--good); margin-right:6px}
 .dot.off{background:var(--stamp)}
+.resume{display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:8px 8px 8px 14px; margin-bottom:12px; font-size:14px}
+.resume span{flex:1; min-width:0; color:var(--muted)}
+.resume b{color:var(--ink)}
+.resume button{padding:9px 12px; font-size:14px; border-radius:10px}
+.resume button.x{border:none; background:none; color:var(--muted); padding:9px 8px}
 .foot{font-size:13px; color:var(--muted); text-align:center}
 .foot a{color:inherit}
 a{color:var(--accent)}
@@ -408,14 +413,18 @@ function home(){
   const ready = !!L.api, gone = L.api === null;
   // Opened from an invite link: just ask for a name and go straight into that club.
   if(validCode(inviteCode) && !L.skipInvite && !(me && me.host && me.code === inviteCode) && !gone) return invited(me, ready);
-  paint(`<section class="card">
+  paint(`${me ? `<div class="resume" role="region" aria-label="Your last club">
+      <span>You were in club <b>${esc(me.code)}</b>${me.name ? ` as <b>${esc(me.name)}</b>` : ""}${me.host ? " (host)" : ""}.</span>
+      <button id="re" ${ready ? "" : "disabled"}>Rejoin</button>
+      <button class="x" id="forget" aria-label="Forget this club">✕</button>
+    </div>` : ""}
+    <section class="card">
     <h1>Play with your friends, each on your own phone</h1>
     ${gone ? `<p class="warn">Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.</p>` : ""}
     ${!ready && !gone ? `<p class="muted">Connecting…</p>` : ""}
     <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
-    ${me ? `<button class="primary" id="re" ${ready ? "" : "disabled"}>Back to club ${esc(me.code)}${me.host ? " (you're the host)" : ""}</button>` : ""}
-    <button class="${me ? "" : "primary"}" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
-    <div class="field"><label for="cd">Or join with a code</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
+    <button class="primary" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
+    <div class="field"><label for="cd">Or join a friend's club</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
     <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
     <p class="muted">Only one phone? <a href="${TEST_URL}">Play the pass-the-phone version</a>.</p>
@@ -430,6 +439,7 @@ function home(){
       enter(c, nm(), false);
     };
     const re = byId("re"); if(re) re.onclick = () => { const n = nm() || me.name; L.name = n; enter(me.code, n, !!(me.host && saved && saved.code === me.code)); };
+    const fg = byId("forget"); if(fg) fg.onclick = () => { L.name = nm() || L.name; store.del("wis-me"); store.del("wis-last"); lastHtml = ""; render(); };
     // A new club replaces the old host state only once the host actually creates it.
   });
 }
