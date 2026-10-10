@@ -74,6 +74,7 @@ button:disabled{opacity:.45; cursor:default}
 .hostbar{border-top:1px dashed var(--line); padding-top:14px; display:flex; flex-direction:column; gap:10px}
 .dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--good); margin-right:6px}
 .dot.off{background:var(--stamp)}
+.golden{border-left:4px solid var(--stamp); background:var(--bg); border-radius:10px; padding:10px 14px; margin:0}
 .foot{font-size:13px; color:var(--muted); text-align:center}
 .foot a{color:inherit}
 a{color:var(--accent)}
@@ -210,6 +211,7 @@ async function enter(code, name, asHost){
   if(asHost){
     const saved = store.get("wis-host", null);
     H = saved && saved.code === code ? saved : newHost(code);
+    saveHost();
   }
   pushPresence();
   render();
@@ -217,8 +219,7 @@ async function enter(code, name, asHost){
 }
 async function leave(){
   try{ if(L.R) await L.R.leave(); }catch(e){}
-  const was = store.get("wis-me", null); if(was) store.set("wis-last", Object.assign(was, {at: Date.now()}));
-  L.R = null; L.code = null; L.isHost = false; L.peers = []; H = null; lastPresence = ""; store.del("wis-me");
+  L.R = null; L.code = null; L.isHost = false; L.peers = []; H = null; lastPresence = "";
   L.skipInvite = true;
   render();
 }
@@ -376,60 +377,53 @@ function render(){
   if(!S){
     const late = Date.now() - L.joinedAt > 6000;
     return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
-      <h1>${late ? "Can't find this club" : "Looking for the club…"}</h1>
-      <p class="muted">${late ? "Check the code with the host, and make sure the host's phone has this page open." : "Connecting to the host's phone."}</p>
+      <h1>${late ? "This club isn't open" : "Looking for the club…"}</h1>
+      <p class="muted">${late ? "Check the code with the host. The club is only open while the host's phone has this page open. If the host closed it, they can open the page and type the same code again." : "Connecting to the host's phone."}</p>
+      ${late ? `<p class="muted">We'll keep trying, so you can wait here.</p>` : ""}
       <button id="lv">Back</button></section>`, () => { byId("lv").onclick = leave; });
   }
   const meIn = S.pl && S.pl.find(x => x[0] === L.me);
   if(S.ph === "lobby") return lobby(S);
   if(!meIn) return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
     <h1>A game is on</h1><p class="muted">You'll be dealt in when the next game starts.</p>
-    ${board(S)}<button class="link" id="lv">Leave club</button></section>`, () => { sureLeave(byId("lv"), leave); });
+    ${board(S)}</section>`);
   game(S, meIn);
 }
 const byId = id => document.getElementById(id);
-// Leaving takes two taps, so nobody leaves the club by accident.
-function sureLeave(btn, then){
-  if(!btn) return;
-  btn.onclick = () => {
-    if(btn.dataset.sure){ then(); return; }
-    btn.dataset.sure = "1"; const was = btn.textContent; btn.textContent = "Tap again to leave";
-    setTimeout(() => { if(btn.isConnected){ delete btn.dataset.sure; btn.textContent = was; } }, 3000);
-  };
-}
-
 const FRESH = 3 * 60 * 60 * 1000;
+// The last name used on this phone, filled in for convenience.
 function lastClub(){
-  const me = store.get("wis-me", null) || store.get("wis-last", null);
+  const me = store.get("wis-me", null);
   return me && me.code && (!me.at || Date.now() - me.at < FRESH) ? me : null;
 }
+// The phone that created a club stays its host: typing the code again brings the host back.
+const hostOf = code => { const h = store.get("wis-host", null); return !!(h && h.code === code); };
 function home(){
-  const me = lastClub(), saved = store.get("wis-host", null);
+  const me = lastClub();
   const ready = !!L.api, gone = L.api === null;
   // Opened from an invite link: just ask for a name and go straight into that club.
-  if(validCode(inviteCode) && !L.skipInvite && !(me && me.host && me.code === inviteCode) && !gone) return invited(me, ready);
-  paint(`<section class="card">
+  if(validCode(inviteCode) && !L.skipInvite && !gone) return invited(me, ready);
+  paint(`section class="card">
     <h1>Play with your friends, each on your own phone</h1>
     ${gone ? `<p class="warn">Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.</p>` : ""}
     ${!ready && !gone ? `<p class="muted">Connecting…</p>` : ""}
     <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
-    ${me ? `<button class="primary" id="re" ${ready ? "" : "disabled"}>Back to club ${esc(me.code)}${me.host ? " (you're the host)" : ""}</button>` : ""}
-    <button class="${me ? "" : "primary"}" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
-    <div class="field"><label for="cd">Or join with a code</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
+    <button class="primary" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
+    <div class="field"><label for="cd">Or join a friend's club</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
     <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
+    <p class="muted">Dropped out of a game? Type the same code and name to get your seat back.</p>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
     <p class="muted">Only one phone? <a href="${TEST_URL}">Play the pass-the-phone version</a>.</p>
   </section>`, () => {
     const nm = () => cleanName(byId("nm").value);
     const need = () => { if(!nm()){ L.err = "Type your name first."; lastHtml = ""; render(); return false; } L.name = nm(); return true; };
-    byId("mk").onclick = () => { if(!need()) return; store.del("wis-host"); store.del("wis-last"); enter(makeCode(), nm(), true); };
+    byId("mk").onclick = () => { if(!need()) return; store.del("wis-host"); enter(makeCode(), nm(), true); };
     byId("jn").onclick = () => {
       if(!need()) return;
       const c = byId("cd").value.toUpperCase().replace(/[^0-9A-Z]/g,"");
       if(!validCode(c)){ L.err = "A club code is 4 numbers and 2 letters, like 4827KX."; lastHtml = ""; return render(); }
-      enter(c, nm(), false);
+      enter(c, nm(), hostOf(c));
     };
-    const re = byId("re"); if(re) re.onclick = () => { const n = nm() || me.name; L.name = n; enter(me.code, n, !!(me.host && saved && saved.code === me.code)); };
     // A new club replaces the old host state only once the host actually creates it.
   });
 }
@@ -448,7 +442,7 @@ function invited(me, ready){
       const n = cleanName(byId("nm").value);
       if(!n){ L.err = "Type your name first."; lastHtml = ""; return render(); }
       if(!L.api) return;
-      L.name = n; L.err = ""; enter(inviteCode, n, false);
+      L.name = n; L.err = ""; enter(inviteCode, n, hostOf(inviteCode));
     };
     byId("jn").onclick = go;
     byId("nm").addEventListener("keydown", e => { if(e.key === "Enter") go(); });
@@ -460,11 +454,12 @@ function rules(){
   const S = L.code ? st() : null;
   paint(`<section class="card rules">
     <h1>How to play</h1>
-    <p>Everyone gets a secret word. Most players (the <b>commoners</b>) share the same word. The <b>spy</b> has a different but similar word, or no word at all, and doesn't know they're the spy. Find the spy before the spy outlasts you.</p>
+    <p>Everyone gets a secret word, or a <b>blank</b> (no word). The <b>commoners</b> are one team and the <b>spy</b> is the odd one out. Depending on the level, the spy has a different but similar word or is blank, and some or even all commoners can be blank too (see Levels below). Nobody is told whether they're a commoner or the spy. Find the spy before the spy outlasts you.</p>
+    <p class="golden"><b>The one rule: always describe your own word truthfully.</b> Every clue must be true about the word you were given, even if you suspect your word is different from everyone else's. Never say something that isn't true about your word just to match the others. (If you have no word, you'll have to bluff from what you hear.)</p>
     <h2>Each round</h2>
     <ol>
       <li>Hold the box to see your word. Don't show anyone.</li>
-      <li>The app names who starts. Go clockwise. Each person says <b>one clue</b> about their own word, out loud. Don't say the word itself.</li>
+      <li>The app names who starts. Go clockwise. Each person says <b>one clue</b> about their own word, out loud. The clue must be true about your word. Don't say the word itself.</li>
       <li>Round 1 has no vote. From round 2 on, everyone still in votes in secret for who they think the spy is.</li>
       <li>The player with the most votes is out. Their word stays secret until the game ends. Players who are out stay quiet and don't vote.</li>
     </ol>
@@ -485,7 +480,7 @@ function rules(){
     <h2>Tips</h2>
     <ul>
       <li>Be vague enough that the spy can't guess your word, but clear enough that your team trusts you.</li>
-      <li>If your clue sounds odd next to everyone else's, you might be the spy. Blend in!</li>
+      <li>If the others' clues don't fit your word, you might be the spy. Keep your clues true to your word, but pick something your word shares with theirs so you blend in.</li>
     </ul>
     <button class="primary" id="rb">${S ? "Back to the game" : "Got it"}</button>
   </section>`, () => { byId("rb").onclick = closeRules; });
@@ -498,8 +493,7 @@ function lobby(S){
   if(!L.isHost) return paint(`<section class="card"><span class="tag">Club ${esc(S.code)}</span>
     <h1>You're in. Waiting for the host to start</h1>
     <p class="muted">Level ${S.lv}: ${esc(Lv.title)}. ${esc(Lv.desc)}</p>
-    <p class="tag">${n} in the club</p>${list}${board(S)}
-    <button class="link" id="lv">Leave club</button></section>`, () => { sureLeave(byId("lv"), leave); });
+    <p class="tag">${n} in the club</p>${list}${board(S)}</section>`);
   paint(`<section class="card"><span class="tag">Your club code</span>
     <div class="bigcode">${esc(S.code)}</div>
     <p class="muted">Friends open this same page on their phone, tap <b>Join club</b> and type the code.${L.api && L.api.kind === "peer" ? "" : " Each friend needs access to the page first: add their email in the Share menu."}</p>
@@ -516,7 +510,7 @@ function lobby(S){
     <p class="warn" ${n >= 3 && n < Lv.min ? "" : "hidden"}>Level ${Lv.n} plays best with ${Lv.min} or more players. You can still play.</p>
     <button class="primary" id="go" ${n < 3 ? "disabled" : ""}>${n < 3 ? "Need at least 3 players" : "Deal the words"}</button>
     </section>${S.sc.length ? `<section class="card">${board(S, true)}</section>` : ""}
-    <button class="link" id="lv">Close club</button>`, () => {
+    <p class="foot">Closed this page by accident? Open the site again and type ${esc(S.code)}. This phone stays the host.</p>`, () => {
     app.querySelectorAll(".level").forEach(b => b.onclick = () => { H.level = +b.dataset.l; saveHost(); tick(); });
     byId("cat").onchange = e => { H.cat = e.target.value; saveHost(); tick(); };
     byId("lang").onchange = e => { H.lang = e.target.value; saveHost(); tick(); };
@@ -533,7 +527,6 @@ function lobby(S){
       try{ await navigator.share({title:"WhoIsSpy", text:"Join my WhoIsSpy club " + S.code, url: inviteUrl(S.code)}); }
       catch(e){ if(e && e.name !== "AbortError"){ L.invMsg = "Sharing didn't work here. Use Copy link instead."; lastHtml = ""; render(); } }
     };
-    sureLeave(byId("lv"), leave);
     const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
   });
 }
@@ -554,7 +547,7 @@ function game(S, meIn){
   let body = "", host = "", bind = null;
   if(S.ph === "describe"){
     body = `${tag}<h1>${starterIn ? `${esc(S.st)} starts` : `${esc(S.st)} is out`}</h1>
-      <p class="muted">${starterIn ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Say one clue about your own word, out loud.</p>
+      <p class="muted">${starterIn ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Say one clue about your own word, out loud. It must be true about your word.</p>
       ${alive ? reveal : `<p class="muted">You're out. Stay quiet and watch.</p>`}${roster}`;
     host = `<button class="primary" id="hx">${S.rd === 1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button>`;
     bind = () => { const b = byId("hx"); if(b) b.onclick = () => S.rd === 1 ? nextRound() : startVote(H.game.P.filter(x => x.a).map(x => x.p)); };
@@ -637,10 +630,6 @@ render();
   else try{ api = window.claude && window.claude.use ? await window.claude.use("room") : null; }catch(e){ api = null; }
   L.api = api;
   render();
-  // Came back after closing the page or losing the connection: go straight back into the club.
-  const me = store.get("wis-me", null), saved = store.get("wis-host", null);
-  if(api && me && me.code && me.name && (!me.at || Date.now() - me.at < FRESH) && !L.code && (!validCode(inviteCode) || inviteCode === me.code))
-    enter(me.code, me.name, !!(me.host && saved && saved.code === me.code));
 })();
 </script>
 
