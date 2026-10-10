@@ -283,17 +283,16 @@ function pickPair(){
   // Pairs tagged "en" or "zh" only work in that language; Both mode uses untagged pairs only.
   const fits = p => H.lang === "both" ? !p[4] : (!p[4] || p[4] === H.lang);
   const pool = cats.flatMap(c => BANK[c]).filter(fits);
-  let fresh = pool.filter(p => !H.used.includes(pairKey(p)));
-  if(!fresh.length){ H.used = []; fresh = pool; }
-  // Thumbs-up pairs are picked more often; 1 in 5 games tries a pair with few ratings.
-  const rated = p => L.ratings[pairKey(p)] || {up:0, down:0};
-  let cand = fresh;
-  if(Math.random() < 0.2){ const few = fresh.filter(p => rated(p).up + rated(p).down < 3); if(few.length) cand = few; }
-  const w = cand.map(p => Math.max(0.2, 1 + rated(p).up - rated(p).down));
-  let r = Math.random() * w.reduce((a,b)=>a+b,0), i = 0;
-  while(r > w[i]){ r -= w[i]; i++; }
-  const p = cand[Math.min(i, cand.length-1)];
-  H.used.push(pairKey(p));
+  // No repeats: this phone remembers every pair it has dealt (across clubs) until the pool runs out.
+  let played = store.get("wis-played", []);
+  let fresh = pool.filter(p => !played.includes(pairKey(p)));
+  if(!fresh.length){ const inPool = new Set(pool.map(pairKey)); played = played.filter(k => !inPool.has(k)); fresh = pool; }
+  // Pairs this phone voted down more than up come last.
+  const r = p => L.ratings[pairKey(p)] || {up:0, down:0};
+  const ok = fresh.filter(p => r(p).down <= r(p).up);
+  const cand = ok.length ? ok : fresh;
+  const p = cand[Math.floor(Math.random() * cand.length)];
+  played.push(pairKey(p)); store.set("wis-played", played);
   return p;
 }
 const wordText = w => !w ? "" : H.lang === "en" ? w.en : H.lang === "zh" ? w.zh : `${w.en} · ${w.zh}`;
