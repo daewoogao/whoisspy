@@ -222,7 +222,8 @@ async function enter(code, name, asHost){
 }
 async function leave(){
   try{ if(L.R) await L.R.leave(); }catch(e){}
-  const was = store.get("wis-me", null); if(was) store.set("wis-last", Object.assign(was, {at: Date.now()}));
+  // Leave means leave: only a host keeps a Rejoin line, to get back to their game.
+  const was = store.get("wis-me", null); if(was && was.host) store.set("wis-last", Object.assign(was, {at: Date.now()})); else store.del("wis-last");
   L.R = null; L.code = null; L.isHost = false; L.peers = []; H = null; lastPresence = ""; store.del("wis-me");
   L.skipInvite = true;
   render();
