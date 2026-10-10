@@ -79,6 +79,7 @@ button:disabled{opacity:.45; cursor:default}
 .resume b{color:var(--ink)}
 .resume button{padding:9px 12px; font-size:14px; border-radius:10px}
 .resume button.x{border:none; background:none; color:var(--muted); padding:9px 8px}
+.golden{border-left:4px solid var(--stamp); background:var(--bg); border-radius:10px; padding:10px 14px; margin:0}
 .foot{font-size:13px; color:var(--muted); text-align:center}
 .foot a{color:inherit}
 a{color:var(--accent)}
@@ -472,10 +473,11 @@ function rules(){
   paint(`<section class="card rules">
     <h1>How to play</h1>
     <p>Everyone gets a secret word. Most players (the <b>commoners</b>) share the same word. The <b>spy</b> has a different but similar word, or no word at all, and doesn't know they're the spy. Find the spy before the spy outlasts you.</p>
+    <p class="golden"><b>The one rule: always describe your own word truthfully.</b> Every clue must be true about the word you were given, even if you suspect your word is different from everyone else's. Never say something that isn't true about your word just to match the others. (If you have no word, you'll have to bluff from what you hear.)</p>
     <h2>Each round</h2>
     <ol>
       <li>Hold the box to see your word. Don't show anyone.</li>
-      <li>The app names who starts. Go clockwise. Each person says <b>one clue</b> about their own word, out loud. Don't say the word itself.</li>
+      <li>The app names who starts. Go clockwise. Each person says <b>one clue</b> about their own word, out loud. The clue must be true about your word. Don't say the word itself.</li>
       <li>Round 1 has no vote. From round 2 on, everyone still in votes in secret for who they think the spy is.</li>
       <li>The player with the most votes is out. Their word stays secret until the game ends. Players who are out stay quiet and don't vote.</li>
     </ol>
@@ -496,7 +498,7 @@ function rules(){
     <h2>Tips</h2>
     <ul>
       <li>Be vague enough that the spy can't guess your word, but clear enough that your team trusts you.</li>
-      <li>If your clue sounds odd next to everyone else's, you might be the spy. Blend in!</li>
+      <li>If the others' clues don't fit your word, you might be the spy. Keep your clues true to your word, but pick something your word shares with theirs so you blend in.</li>
     </ul>
     <button class="primary" id="rb">${S ? "Back to the game" : "Got it"}</button>
   </section>`, () => { byId("rb").onclick = closeRules; });
@@ -565,7 +567,7 @@ function game(S, meIn){
   let body = "", host = "", bind = null;
   if(S.ph === "describe"){
     body = `${tag}<h1>${starterIn ? `${esc(S.st)} starts` : `${esc(S.st)} is out`}</h1>
-      <p class="muted">${starterIn ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Say one clue about your own word, out loud.</p>
+      <p class="muted">${starterIn ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Say one clue about your own word, out loud. It must be true about your word.</p>
       ${alive ? reveal : `<p class="muted">You're out. Stay quiet and watch.</p>`}${roster}`;
     host = `<button class="primary" id="hx">${S.rd === 1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button>`;
     bind = () => { const b = byId("hx"); if(b) b.onclick = () => S.rd === 1 ? nextRound() : startVote(H.game.P.filter(x => x.a).map(x => x.p)); };

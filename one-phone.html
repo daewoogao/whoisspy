@@ -221,7 +221,7 @@ function render(){
     app.innerHTML = `<section class="card">
       <span class="tag">Level ${S.level} · Round ${G.round}</span>
       <h1>${G.alive[G.starter] ? `${nm(G.starter)} starts` : `${nm(G.starter)} is out`}</h1>
-      <p class="muted">${G.alive[G.starter] ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Each person says one clue about their own word, not a guess from what others said.</p>
+      <p class="muted">${G.alive[G.starter] ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Each person says one clue that is true about their own word, even if they think their word is different.</p>
       <p class="tag">Still in the game</p>
       <ul class="list">${R.map((r,i)=>`<li class="${G.alive[i]?"":"out"}"><span>${nm(i)}</span>${i===G.starter&&G.alive[i]?'<span class="chip">Starts</span>':''}</li>`).join("")}</ul>
       <button class="primary" id="go">${G.round===1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button></section>`;
