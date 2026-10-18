@@ -70,19 +70,19 @@ button:disabled{opacity:.45; cursor:default}
 </head>
 <body>
 <div class="wrap">
-  <header><div class="logo">Who<span>Is</span>Spy</div><div style="display:flex;align-items:center;gap:10px"><span class="tag">Pass the phone</span><a href="./?rules" style="font:800 13px/1 var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--card)">Rules</a></div></header>
+  <header><div class="logo">Who<span>Is</span>Spy</div><div style="display:flex;align-items:center;gap:10px"><span class="tag" id="mode">Pass the phone</span><button id="langBtn" style="white-space:nowrap;font:800 13px/1 var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--card);cursor:pointer"></button><a href="./?rules" id="rulesLink" style="white-space:nowrap;font:800 13px/1 var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;background:var(--card)">Rules</a></div></header>
   <main id="app" aria-live="polite"></main>
-  <p class="foot">One phone is passed around the table. Everyone has a phone? <a href="./">Play the club version</a>.</p>
+  <p class="foot" id="foot">One phone is passed around the table. Everyone has a phone? <a href="./">Play the club version</a>.</p>
 </div>
 
 <script>
 const BANK = {"Food and drink": [["Coffee", "咖啡", "Tea", "茶"], ["Dumpling", "饺子", "Wonton", "馄饨"], ["Pizza", "披萨", "Pie", "馅饼"], ["Ice cream", "冰淇淋", "Frozen yogurt", "冻酸奶"], ["Spaghetti", "意大利面", "Ramen", "拉面"], ["Milk", "牛奶", "Soy milk", "豆浆"], ["Butter", "黄油", "Cheese", "奶酪"], ["Honey", "蜂蜜", "Syrup", "糖浆"], ["Watermelon", "西瓜", "Cantaloupe", "哈密瓜"], ["Strawberry", "草莓", "Cherry", "樱桃"], ["Hot pot", "火锅", "Barbecue", "烧烤"], ["Sushi", "寿司", "Rice ball", "饭团"], ["Mooncake", "月饼", "Rice dumpling", "粽子"], ["Steamed bun", "馒头", "Bread", "面包"], ["Cola", "可乐", "Sparkling water", "苏打水"], ["Chocolate", "巧克力", "Candy", "糖果"], ["Vinegar", "醋", "Soy sauce", "酱油"], ["Orange", "橙子", "Tangerine", "橘子"], ["Bubble tea", "珍珠奶茶", "Milkshake", "奶昔"], ["Popcorn", "爆米花", "Potato chips", "薯片"], ["French fries", "薯条", "Hash browns", "薯饼"], ["Steamed stuffed bun", "包子", "Dumpling", "饺子", "zh"], ["Fried dough stick", "油条", "Fried dough twist", "麻花", "zh"], ["Stinky tofu", "臭豆腐", "Durian", "榴莲", "zh"], ["Jianbing", "煎饼果子", "Roujiamo", "肉夹馍", "zh"], ["Spicy gluten strips", "辣条", "Beef jerky", "牛肉干", "zh"], ["Pancake", "松饼", "Waffle", "华夫饼", "en"]], "Animals": [["Cat", "猫", "Tiger", "老虎"], ["Butterfly", "蝴蝶", "Moth", "飞蛾"], ["Dolphin", "海豚", "Shark", "鲨鱼"], ["Rabbit", "兔子", "Hamster", "仓鼠"], ["Penguin", "企鹅", "Duck", "鸭子"], ["Horse", "马", "Zebra", "斑马"], ["Wolf", "狼", "Fox", "狐狸"], ["Crocodile", "鳄鱼", "Lizard", "蜥蜴"], ["Bee", "蜜蜂", "Mosquito", "蚊子"], ["Owl", "猫头鹰", "Eagle", "老鹰"], ["Frog", "青蛙", "Turtle", "乌龟"], ["Panda", "熊猫", "Koala", "考拉"], ["Giraffe", "长颈鹿", "Camel", "骆驼"], ["Goldfish", "金鱼", "Parrot", "鹦鹉"], ["Snake", "蛇", "Earthworm", "蚯蚓"], ["Sheep", "绵羊", "Goat", "山羊", "en"], ["Squirrel", "松鼠", "Mouse", "老鼠"], ["Peacock", "孔雀", "Flamingo", "火烈鸟"], ["Spider", "蜘蛛", "Ant", "蚂蚁"], ["Octopus", "章鱼", "Jellyfish", "水母"], ["Magpie", "喜鹊", "Crow", "乌鸦", "zh"], ["Dragon", "龙", "Phoenix", "凤凰", "zh"], ["Qilin", "麒麟", "Unicorn", "独角兽", "zh"], ["Alligator", "短吻鳄", "Crocodile", "鳄鱼", "en"]], "Places": [["Beach", "海滩", "Swimming pool", "游泳池"], ["Library", "图书馆", "Bookstore", "书店"], ["Hospital", "医院", "Pharmacy", "药店"], ["Cinema", "电影院", "Theater", "剧院"], ["Airport", "机场", "Train station", "火车站"], ["Hotel", "酒店", "Dormitory", "宿舍"], ["Supermarket", "超市", "Convenience store", "便利店"], ["Zoo", "动物园", "Aquarium", "水族馆"], ["Gym", "健身房", "Park", "公园"], ["Kindergarten", "幼儿园", "Playground", "游乐场"], ["Church", "教堂", "Temple", "寺庙"], ["Bank", "银行", "Post office", "邮局"], ["Restaurant", "餐厅", "Cafeteria", "食堂"], ["Museum", "博物馆", "Art gallery", "美术馆"], ["Elevator", "电梯", "Escalator", "扶梯"], ["Kitchen", "厨房", "Bathroom", "浴室"], ["Mountain", "山", "Island", "岛"], ["Desert", "沙漠", "Grassland", "草原"], ["Wedding", "婚礼", "Birthday party", "生日派对"], ["Classroom", "教室", "Office", "办公室"], ["Wet market", "菜市场", "Supermarket", "超市", "zh"], ["Temple fair", "庙会", "Night market", "夜市", "zh"], ["Bathhouse", "澡堂", "Hot spring", "温泉", "zh"], ["Motel", "汽车旅馆", "Hotel", "酒店", "en"]], "Everyday objects": [["Pillow", "枕头", "Cushion", "靠垫"], ["Toothbrush", "牙刷", "Comb", "梳子"], ["Umbrella", "雨伞", "Raincoat", "雨衣"], ["Mirror", "镜子", "Window", "窗户"], ["Glasses", "眼镜", "Sunglasses", "墨镜"], ["Chopsticks", "筷子", "Fork", "叉子"], ["Scissors", "剪刀", "Knife", "刀"], ["Pen", "钢笔", "Chalk", "粉笔", "en"], ["Key", "钥匙", "Password", "密码"], ["Wallet", "钱包", "Backpack", "背包"], ["Candle", "蜡烛", "Flashlight", "手电筒"], ["Socks", "袜子", "Gloves", "手套"], ["Phone", "手机", "Walkie-talkie", "对讲机"], ["Clock", "时钟", "Calendar", "日历"], ["Blanket", "毯子", "Towel", "毛巾"], ["Lipstick", "口红", "Crayon", "蜡笔"], ["Fan", "风扇", "Air conditioner", "空调"], ["Bottle", "瓶子", "Cup", "杯子"], ["Balloon", "气球", "Bubble", "泡泡"], ["Ladder", "梯子", "Stairs", "楼梯", "en"], ["Red envelope", "红包", "Spring couplets", "对联", "zh"], ["Abacus", "算盘", "Calculator", "计算器", "zh"], ["Firecracker", "鞭炮", "Fireworks", "烟花", "zh"], ["Mug", "马克杯", "Cup", "杯子", "en"]], "Jobs": [["Doctor", "医生", "Nurse", "护士"], ["Chef", "厨师", "Waiter", "服务员"], ["Teacher", "老师", "Coach", "教练"], ["Police officer", "警察", "Security guard", "保安"], ["Firefighter", "消防员", "Lifeguard", "救生员"], ["Pilot", "飞行员", "Flight attendant", "空乘"], ["Singer", "歌手", "Actor", "演员"], ["Dentist", "牙医", "Barber", "理发师"], ["Lawyer", "律师", "Judge", "法官"], ["Farmer", "农民", "Gardener", "园丁"], ["Journalist", "记者", "Writer", "作家"], ["Photographer", "摄影师", "Painter", "画家"], ["Magician", "魔术师", "Clown", "小丑"], ["Taxi driver", "出租车司机", "Delivery rider", "外卖员"], ["Programmer", "程序员", "Hacker", "黑客"], ["Astronaut", "宇航员", "Diver", "潜水员"], ["Tour guide", "导游", "Host", "主持人"], ["Vet", "兽医", "Zookeeper", "饲养员"], ["Cashier", "收银员", "Bank teller", "银行柜员"], ["Model", "模特", "Influencer", "网红"], ["Homeroom teacher", "班主任", "College counselor", "辅导员", "zh"], ["Matchmaker", "媒婆", "Old Man under the Moon", "月老", "zh"], ["Landlady", "包租婆", "Real estate agent", "房产中介", "zh"], ["Chef", "主厨", "Cook", "厨师", "en"]], "Sports and hobbies": [["Badminton", "羽毛球", "Tennis", "网球"], ["Skiing", "滑雪", "Skating", "滑冰", "en"], ["Painting", "绘画", "Drawing", "素描"], ["Basketball", "篮球", "Volleyball", "排球"], ["Soccer", "足球", "Rugby", "橄榄球"], ["Swimming", "游泳", "Diving", "潜水"], ["Yoga", "瑜伽", "Tai chi", "太极"], ["Chess", "国际象棋", "Go", "围棋", "zh"], ["Karaoke", "卡拉OK", "Concert", "演唱会"], ["Fishing", "钓鱼", "Camping", "露营"], ["Boxing", "拳击", "Kung fu", "功夫"], ["Ping pong", "乒乓球", "Billiards", "台球"], ["Running", "跑步", "Hiking", "徒步", "en"], ["Dancing", "跳舞", "Gymnastics", "体操"], ["Cycling", "骑自行车", "Horse riding", "骑马"], ["Surfing", "冲浪", "Skateboarding", "滑板"], ["Knitting", "织毛衣", "Sewing", "缝纫"], ["Mahjong", "麻将", "Poker", "扑克"], ["Bowling", "保龄球", "Golf", "高尔夫"], ["Jigsaw puzzle", "拼图", "Lego", "乐高"], ["Flying a kite", "放风筝", "Paper planes", "纸飞机"], ["Square dancing", "广场舞", "Aerobics", "健身操", "zh"], ["Shuttlecock kicking", "踢毽子", "Hopscotch", "跳房子", "zh"], ["Dou Dizhu", "斗地主", "Guandan", "掼蛋", "zh"]]};
 const LEVELS = [
-  {n:1, title:"One spy", desc:"The spy has a different word.", min:4},
-  {n:2, title:"One spy, two blanks", desc:"The spy has a different word. Two commoners have no word.", min:6},
-  {n:3, title:"One spy, all blank", desc:"Only the spy has a word. Every commoner is blank.", min:4},
-  {n:4, title:"Two spies", desc:"One spy has a different word, the other spy is blank.", min:6},
-  {n:5, title:"Two spies, all blank", desc:"Both spies have a word. Every commoner is blank.", min:6}
+  {n:1, title:"One spy", desc:"The spy has a different word.", zt:"一个卧底", zd:"卧底拿到不同的词。", min:4},
+  {n:2, title:"One spy, two blanks", desc:"The spy has a different word. Two commoners have no word.", zt:"一个卧底，两个白板", zd:"卧底拿到不同的词。两个平民没有词。", min:6},
+  {n:3, title:"One spy, all blank", desc:"Only the spy has a word. Every commoner is blank.", zt:"一个卧底，全白板", zd:"只有卧底有词。所有平民都是白板。", min:4},
+  {n:4, title:"Two spies", desc:"One spy has a different word, the other spy is blank.", zt:"两个卧底", zd:"一个卧底拿到不同的词，另一个卧底是白板。", min:6},
+  {n:5, title:"Two spies, all blank", desc:"Both spies have a word. Every commoner is blank.", zt:"两个卧底，全白板", zd:"两个卧底都有词。所有平民都是白板。", min:6}
 ];
 
 const store = {
@@ -96,6 +96,22 @@ let S = {
   used: [], scores: {}, ratings: store.get("wis-ratings", {}), game: null, held: false
 };
 
+// Interface language, chosen on this phone and remembered (shared with the club page). The words dealt follow "Words in".
+let UI = store.get("wis-ui", null) || (/^zh/i.test(navigator.language || "") ? "zh" : "en");
+const t = (en, zh) => UI === "zh" ? zh : en;
+const CAT_ZH = {"All":"全部", "Food and drink":"食物饮料", "Animals":"动物", "Places":"地点", "Everyday objects":"日常用品", "Jobs":"职业", "Sports and hobbies":"运动爱好"};
+const catName = c => t(c, CAT_ZH[c] || c);
+const lvTitle = l => t(l.title, l.zt), lvDesc = l => t(l.desc, l.zd);
+function langUi(){
+  document.documentElement.lang = t("en", "zh-Hans");
+  const b = document.getElementById("langBtn");
+  b.textContent = t("中文", "EN"); b.lang = t("zh-Hans", "en");
+  b.setAttribute("aria-label", t("切换到中文", "Switch to English"));
+  document.getElementById("mode").textContent = t("Pass the phone", "传手机版");
+  document.getElementById("rulesLink").textContent = t("Rules", "规则");
+  document.getElementById("foot").innerHTML = t('One phone is passed around the table. Everyone has a phone? <a href="./">Play the club version</a>.', '一部手机在桌上传着玩。每人都有手机？<a href="./">玩房间版</a>。');
+}
+document.getElementById("langBtn").onclick = () => { UI = UI === "zh" ? "en" : "zh"; store.set("wis-ui", UI); render(); };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const app = document.getElementById("app");
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
@@ -193,6 +209,7 @@ function rate(v){
 function nextRound(){ const G=g(); G.round++; G.phase="describe"; render(); }
 
 function render(){
+  langUi();
   const G = S.game;
   if(!G) return setup();
   const R = G.roles;
@@ -200,14 +217,14 @@ function render(){
   if(G.phase==="pass"){
     const i = G.deal;
     app.innerHTML = `<section class="card">
-      <span class="tag">Dealing words · ${i+1} of ${R.length}</span>
-      <h1>Pass the phone to ${nm(i)}</h1>
-      <p class="muted">Press and hold the box to see your word. Let go to hide it.</p>
-      <div class="reveal" id="rv" tabindex="0" role="button" aria-label="Hold to reveal your word">
-        <div id="rvt"><span class="muted">Hold here</span></div></div>
-      <button class="primary" id="nx">${i+1 < R.length ? "Got it, pass on" : "Got it, start round 1"}</button></section>`;
-    const rv = document.getElementById("rv"), t = document.getElementById("rvt");
-    const show = on => { rv.classList.toggle("on", on); t.innerHTML = on ? (R[i].word ? `<div class="word">${esc(wordText(R[i].word))}</div>` : `<div class="word">You have no word</div><p class="muted">你没有词 · listen and blend in</p>`) : `<span class="muted">Hold here</span>`; };
+      <span class="tag">${t(`Dealing words · ${i+1} of ${R.length}`, `发词 · 第${i+1}个，共${R.length}人`)}</span>
+      <h1>${t(`Pass the phone to ${nm(i)}`, `把手机交给 ${nm(i)}`)}</h1>
+      <p class="muted">${t("Press and hold the box to see your word. Let go to hide it.", "按住方框查看你的词，松手就会隐藏。")}</p>
+      <div class="reveal" id="rv" tabindex="0" role="button" aria-label="${t("Hold to reveal your word", "按住查看你的词")}">
+        <div id="rvt"><span class="muted">${t("Hold here", "按住这里")}</span></div></div>
+      <button class="primary" id="nx">${i+1 < R.length ? t("Got it, pass on", "看好了，传给下一个") : t("Got it, start round 1", "看好了，开始第1轮")}</button></section>`;
+    const rv = document.getElementById("rv"), rt = document.getElementById("rvt");
+    const show = on => { rv.classList.toggle("on", on); rt.innerHTML = on ? (R[i].word ? `<div class="word">${esc(wordText(R[i].word))}</div>` : t(`<div class="word">You have no word</div><p class="muted">你没有词 · listen and blend in</p>`, `<div class="word">你没有词</div><p class="muted">听别人怎么说，想办法混进去</p>`)) : `<span class="muted">${t("Hold here", "按住这里")}</span>`; };
     rv.addEventListener("pointerdown", e => { e.preventDefault(); show(true); });
     ["pointerup","pointerleave","pointercancel"].forEach(ev => rv.addEventListener(ev, () => show(false)));
     rv.addEventListener("keydown", e => { if(e.key===" "||e.key==="Enter"){ e.preventDefault(); show(true); } });
@@ -218,12 +235,12 @@ function render(){
   if(G.phase==="describe"){
     const o = order();
     app.innerHTML = `<section class="card">
-      <span class="tag">Level ${S.level} · Round ${G.round}</span>
-      <h1>${G.alive[G.starter] ? `${nm(G.starter)} starts` : `${nm(G.starter)} is out`}</h1>
-      <p class="muted">${G.alive[G.starter] ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Each person says one clue that is true about their own word, even if they think their word is different.</p>
-      <p class="tag">Still in the game</p>
-      <ul class="list">${R.map((r,i)=>`<li class="${G.alive[i]?"":"out"}"><span>${nm(i)}</span>${i===G.starter&&G.alive[i]?'<span class="chip">Starts</span>':''}</li>`).join("")}</ul>
-      <button class="primary" id="go">${G.round===1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button></section>`;
+      <span class="tag">${t(`Level ${S.level} · Round ${G.round}`, `第${S.level}关 · 第${G.round}轮`)}</span>
+      <h1>${G.alive[G.starter] ? t(`${nm(G.starter)} starts`, `${nm(G.starter)} 先说`) : t(`${nm(G.starter)} is out`, `${nm(G.starter)} 已出局`)}</h1>
+      <p class="muted">${G.alive[G.starter] ? t("Then go clockwise around the table.", "然后按顺时针轮流。") : t("The next person clockwise who is still in starts, then go clockwise.", "由顺时针方向下一个还在场的人先说，然后顺时针轮流。")}${t(" Each person says one clue that is true about their own word, even if they think their word is different.", "每人说一句符合自己词的描述，即使觉得自己的词和别人不一样。")}</p>
+      <p class="tag">${t("Still in the game", "还在场上")}</p>
+      <ul class="list">${R.map((r,i)=>`<li class="${G.alive[i]?"":"out"}"><span>${nm(i)}</span>${i===G.starter&&G.alive[i]?`<span class="chip">${t("Starts", "先说")}</span>`:''}</li>`).join("")}</ul>
+      <button class="primary" id="go">${G.round===1 ? t("Everyone has spoken, next round", "大家都说完了，下一轮") : t("Everyone has spoken, vote", "大家都说完了，投票")}</button></section>`;
     document.getElementById("go").onclick = () => G.round===1 ? nextRound() : startVote(order());
     return;
   }
@@ -231,55 +248,55 @@ function render(){
     const v = G.voters[G.vi];
     const opts = G.cands.filter(i => i!==v);
     app.innerHTML = `<section class="card">
-      <span class="tag">${G.tieRound ? "Tie-break vote" : "Secret vote"} · ${G.vi+1} of ${G.voters.length}</span>
-      <h1>${nm(v)}, who is the spy?</h1>
-      <p class="muted">Tap one name. Nobody will see who you picked.</p>
+      <span class="tag">${G.tieRound ? t("Tie-break vote", "平票重投") : t("Secret vote", "秘密投票")} · ${t(`${G.vi+1} of ${G.voters.length}`, `第${G.vi+1}个，共${G.voters.length}人`)}</span>
+      <h1>${t(`${nm(v)}, who is the spy?`, `${nm(v)}，谁是卧底？`)}</h1>
+      <p class="muted">${t("Tap one name. Nobody will see who you picked.", "点一个名字。没人会知道你选了谁。")}</p>
       <div class="picks">${opts.map(i=>`<button class="pick" data-i="${i}">${nm(i)}</button>`).join("")}</div>
-      ${opts.length ? "" : `<button id="skip">Skip, nobody to vote for</button>`}</section>`;
+      ${opts.length ? "" : `<button id="skip">${t("Skip, nobody to vote for", "跳过，没有人可投")}</button>`}</section>`;
     app.querySelectorAll(".pick").forEach(b => b.onclick = () => castVote(+b.dataset.i));
     const sk = document.getElementById("skip"); if(sk) sk.onclick = () => { G.vi++; G.vi>=G.voters.length ? tally() : render(); };
     return;
   }
   if(G.phase==="tie"){
     app.innerHTML = `<section class="card">
-      <span class="stamp">Tie vote</span>
-      <h1>${G.cands.map(nm).join(" and ")} are tied</h1>
-      <p class="muted">Only they describe their word once more. Then everyone else votes between just them. The tied players don't vote.</p>
-      <button class="primary" id="go">They've spoken, vote again</button></section>`;
+      <span class="stamp">${t("Tie vote", "平票")}</span>
+      <h1>${t(`${G.cands.map(nm).join(" and ")} are tied`, `${G.cands.map(nm).join("和")}平票`)}</h1>
+      <p class="muted">${t("Only they describe their word once more. Then everyone else votes between just them. The tied players don't vote.", "只有平票的人再描述一次自己的词。然后其他人只在他们之中投票。平票的人不投票。")}</p>
+      <button class="primary" id="go">${t("They've spoken, vote again", "说完了，重新投票")}</button></section>`;
     document.getElementById("go").onclick = () => startVote(G.cands);
     return;
   }
   if(G.phase==="nobody"){
-    app.innerHTML = `<section class="card"><span class="stamp">Tied again</span>
-      <h1>Nobody is out this round</h1><p class="muted">Play moves on to the next round.</p>
-      <button class="primary" id="go">Start round ${G.round+1}</button></section>`;
+    app.innerHTML = `<section class="card"><span class="stamp">${t("Tied again", "再次平票")}</span>
+      <h1>${t("Nobody is out this round", "这一轮没有人出局")}</h1><p class="muted">${t("Play moves on to the next round.", "游戏进入下一轮。")}</p>
+      <button class="primary" id="go">${t(`Start round ${G.round+1}`, `开始第${G.round+1}轮`)}</button></section>`;
     document.getElementById("go").onclick = nextRound; return;
   }
   if(G.phase==="out"){
-    app.innerHTML = `<section class="card"><span class="stamp">Voted out</span>
-      <h1>${nm(G.lastOut)} is out</h1>
-      <p class="muted">Their word stays secret until the game ends. The game goes on.</p>
+    app.innerHTML = `<section class="card"><span class="stamp">${t("Voted out", "出局")}</span>
+      <h1>${t(`${nm(G.lastOut)} is out`, `${nm(G.lastOut)} 出局了`)}</h1>
+      <p class="muted">${t("Their word stays secret until the game ends. The game goes on.", "出局者的词在游戏结束前保密。游戏继续。")}</p>
       <ol class="list">${R.map((r,i)=>`<li class="${G.alive[i]?"":"out"}"><span>${nm(i)}</span></li>`).join("")}</ol>
-      <button class="primary" id="go">Start round ${G.round+1}</button></section>`;
+      <button class="primary" id="go">${t(`Start round ${G.round+1}`, `开始第${G.round+1}轮`)}</button></section>`;
     document.getElementById("go").onclick = nextRound; return;
   }
   if(G.phase==="over"){
     const spy = G.winner==="spy";
     const board = Object.entries(S.scores).sort((a,b)=>b[1]-a[1]);
     app.innerHTML = `<section class="card">
-      <span class="stamp ${spy?"":"good"}">${spy ? "Spies win" : "Commoners win"}</span>
-      <h1>${G.lastOut!=null ? `${nm(G.lastOut)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "Every spy has been caught."}</h1>
-      <p class="muted">Commoner word: <b>${esc(wordText(G.com))}</b> · Spy word: <b>${esc(wordText(G.spyW))}</b></p>
-      <ul class="list">${R.map((r,i)=>`<li><span>${nm(i)} · ${r.word ? esc(wordText(r.word)) : "<i>blank</i>"}</span><span class="chip ${r.role==="spy"?"spy":""}">${r.role==="spy"?"Spy":"Commoner"}</span></li>`).join("")}</ul>
+      <span class="stamp ${spy?"":"good"}">${spy ? t("Spies win", "卧底获胜") : t("Commoners win", "平民获胜")}</span>
+      <h1>${G.lastOut!=null ? t(`${nm(G.lastOut)} was voted out. `, `${nm(G.lastOut)} 被投出局。`) : ""}${spy ? t("The spies made it to the end.", "卧底撑到了最后。") : t("Every spy has been caught.", "所有卧底都被找出来了。")}</h1>
+      <p class="muted">${t("Commoner word: ", "平民词：")}<b>${esc(wordText(G.com))}</b> · ${t("Spy word: ", "卧底词：")}<b>${esc(wordText(G.spyW))}</b></p>
+      <ul class="list">${R.map((r,i)=>`<li><span>${nm(i)} · ${r.word ? esc(wordText(r.word)) : `<i>${t("blank", "白板")}</i>`}</span><span class="chip ${r.role==="spy"?"spy":""}">${r.role==="spy"?t("Spy", "卧底"):t("Commoner", "平民")}</span></li>`).join("")}</ul>
     </section>
-    <section class="card"><h2>Fun pair?</h2>
-      <div class="thumbs"><button id="up" aria-pressed="${G.rated==="up"}">👍 Yes</button><button id="dn" aria-pressed="${G.rated==="down"}">👎 No</button></div>
-      <p class="muted">Ratings stay on this phone and help pick better pairs next time.</p></section>
-    <section class="card"><h2>Scoreboard</h2>
-      <p class="muted">Spy win: 2 points each. Commoner win: 1 point each.</p>
+    <section class="card"><h2>${t("Fun pair?", "这对词好玩吗？")}</h2>
+      <div class="thumbs"><button id="up" aria-pressed="${G.rated==="up"}">👍 ${t("Yes", "好玩")}</button><button id="dn" aria-pressed="${G.rated==="down"}">👎 ${t("No", "不好玩")}</button></div>
+      <p class="muted">${t("Ratings stay on this phone and help pick better pairs next time.", "评分保存在这部手机上，下次会挑更好的词。")}</p></section>
+    <section class="card"><h2>${t("Scoreboard", "积分榜")}</h2>
+      <p class="muted">${t("Spy win: 2 points each. Commoner win: 1 point each.", "卧底获胜：每人2分。平民获胜：每人1分。")}</p>
       <ul class="list">${board.map(([n,s])=>`<li><span>${esc(n)}</span><span class="score">${s}</span></li>`).join("")}</ul>
-      <div class="row"><button class="primary" id="again">Play again</button><button id="setup">Change players or level</button></div>
-      <button id="reset">Reset scoreboard</button></section>`;
+      <div class="row"><button class="primary" id="again">${t("Play again", "再玩一局")}</button><button id="setup">${t("Change players or level", "换玩家或关卡")}</button></div>
+      <button id="reset">${t("Reset scoreboard", "积分清零")}</button></section>`;
     document.getElementById("up").onclick = () => rate("up");
     document.getElementById("dn").onclick = () => rate("down");
     document.getElementById("again").onclick = () => newGame();
@@ -291,21 +308,21 @@ function render(){
 function setup(){
   const n = players().length, L = LEVELS[S.level-1];
   app.innerHTML = `<section class="card">
-    <h1>Set up the table</h1>
-    <div class="field"><label for="names">Players, one name per line, any order</label>
+    <h1>${t("Set up the table", "准备开局")}</h1>
+    <div class="field"><label for="names">${t("Players, one name per line, any order", "玩家名字，每行一个，顺序随意")}</label>
       <textarea id="names" spellcheck="false">${esc(S.names)}</textarea>
-      <span class="muted" id="cnt">${n} players</span></div>
-    <div class="field"><label>Level</label><div class="levels">${LEVELS.map(l=>`<button class="level" data-l="${l.n}" aria-pressed="${S.level===l.n}"><b>${l.n}</b><span>${l.title}<small>${l.desc} Suggested: ${l.min}+ players.</small></span></button>`).join("")}</div></div>
+      <span class="muted" id="cnt">${t(`${n} players`, `${n}人`)}</span></div>
+    <div class="field"><label>${t("Level", "关卡")}</label><div class="levels">${LEVELS.map(l=>`<button class="level" data-l="${l.n}" aria-pressed="${S.level===l.n}"><b>${l.n}</b><span>${esc(lvTitle(l))}<small>${esc(lvDesc(l))}${t(` Suggested: ${l.min}+ players.`, `建议${l.min}人以上。`)}</small></span></button>`).join("")}</div></div>
     <div class="row">
-      <div class="field"><label for="cat">Category</label><select id="cat">${["All",...Object.keys(BANK)].map(c=>`<option ${c===S.cat?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
-      <div class="field"><label for="lang">Words in</label><select id="lang">
-        <option value="en" ${S.lang==="en"?"selected":""}>English</option><option value="zh" ${S.lang==="zh"?"selected":""}>中文</option><option value="both" ${S.lang==="both"?"selected":""}>Both</option></select></div>
+      <div class="field"><label for="cat">${t("Category", "类别")}</label><select id="cat">${["All",...Object.keys(BANK)].map(c=>`<option value="${esc(c)}" ${c===S.cat?"selected":""}>${esc(catName(c))}</option>`).join("")}</select></div>
+      <div class="field"><label for="lang">${t("Words in", "词语语言")}</label><select id="lang">
+        <option value="en" ${S.lang==="en"?"selected":""}>English</option><option value="zh" ${S.lang==="zh"?"selected":""}>中文</option><option value="both" ${S.lang==="both"?"selected":""}>${t("Both", "中英都有")}</option></select></div>
     </div>
-    <p class="warn" id="warn" ${n < L.min ? "" : "hidden"}>Level ${L.n} plays best with ${L.min} or more players. You can still play.</p>
-    <button class="primary" id="start" ${n < 3 ? "disabled" : ""}>Deal the words</button>
-    <p class="muted" id="need" ${n < 3 ? "" : "hidden"}>Add at least 3 players to start.</p></section>`;
+    <p class="warn" id="warn" ${n < L.min ? "" : "hidden"}>${t(`Level ${L.n} plays best with ${L.min} or more players. You can still play.`, `第${L.n}关最好有${L.min}人或以上。人少也可以玩。`)}</p>
+    <button class="primary" id="start" ${n < 3 ? "disabled" : ""}>${t("Deal the words", "发词")}</button>
+    <p class="muted" id="need" ${n < 3 ? "" : "hidden"}>${t("Add at least 3 players to start.", "至少加3个玩家才能开始。")}</p></section>`;
   const upd = () => { S.names = document.getElementById("names").value; const c = players().length, L2 = LEVELS[S.level-1];
-    document.getElementById("cnt").textContent = c + " players";
+    document.getElementById("cnt").textContent = t(c + " players", c + "人");
     document.getElementById("warn").hidden = c >= L2.min; document.getElementById("start").disabled = c < 3; document.getElementById("need").hidden = c >= 3; };
   document.getElementById("names").addEventListener("input", upd);
   app.querySelectorAll(".level").forEach(b => b.onclick = () => { S.names = document.getElementById("names").value; S.level = +b.dataset.l; setup(); });
