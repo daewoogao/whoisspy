@@ -25,7 +25,7 @@ body{background:var(--bg); color:var(--ink); font:16px/1.5 var(--body); padding-
 .wrap{max-width:460px; margin:0 auto; display:flex; flex-direction:column; gap:16px}
 header{display:flex; align-items:center; justify-content:space-between; gap:12px}
 .hdr{display:flex; align-items:center; gap:10px}
-.rulesbtn{font:800 13px/1 var(--body); padding:8px 12px; border-radius:999px}
+.rulesbtn{white-space:nowrap; font:800 13px/1 var(--body); padding:8px 12px; border-radius:999px}
 .rules h2{margin-top:6px}
 .rules ul,.rules ol{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px}
 .rules table{border-collapse:collapse; width:100%; font-size:14px}
@@ -87,20 +87,20 @@ a{color:var(--accent)}
 </head>
 <body>
 <div class="wrap">
-  <header><div class="logo">Who<span>Is</span>Spy</div><div class="hdr"><span class="tag" id="net"></span><button class="rulesbtn" id="rulesBtn">Rules</button></div></header>
+  <header><div class="logo">Who<span>Is</span>Spy</div><div class="hdr"><span class="tag" id="net"></span><button class="rulesbtn" id="langBtn"></button><button class="rulesbtn" id="rulesBtn">Rules</button></div></header>
   <main id="app" aria-live="polite"></main>
-  <p class="foot">Everyone opens this page on their own phone. One person creates the club, the rest join with its code.</p>
+  <p class="foot" id="foot">Everyone opens this page on their own phone. One person creates the club, the rest join with its code.</p>
 </div>
 
 <script>
 const BANK = {"Food and drink":[["Coffee","咖啡","Tea","茶"],["Dumpling","饺子","Wonton","馄饨"],["Pizza","披萨","Pie","馅饼"],["Ice cream","冰淇淋","Frozen yogurt","冻酸奶"],["Spaghetti","意大利面","Ramen","拉面"],["Milk","牛奶","Soy milk","豆浆"],["Butter","黄油","Cheese","奶酪"],["Honey","蜂蜜","Syrup","糖浆"],["Watermelon","西瓜","Cantaloupe","哈密瓜"],["Strawberry","草莓","Cherry","樱桃"],["Hot pot","火锅","Barbecue","烧烤"],["Sushi","寿司","Rice ball","饭团"],["Mooncake","月饼","Rice dumpling","粽子"],["Steamed bun","馒头","Bread","面包"],["Cola","可乐","Sparkling water","苏打水"],["Chocolate","巧克力","Candy","糖果"],["Vinegar","醋","Soy sauce","酱油"],["Orange","橙子","Tangerine","橘子"],["Bubble tea","珍珠奶茶","Milkshake","奶昔"],["Popcorn","爆米花","Potato chips","薯片"],["French fries","薯条","Hash browns","薯饼"],["Steamed stuffed bun","包子","Dumpling","饺子","zh"],["Fried dough stick","油条","Fried dough twist","麻花","zh"],["Stinky tofu","臭豆腐","Durian","榴莲","zh"],["Jianbing","煎饼果子","Roujiamo","肉夹馍","zh"],["Spicy gluten strips","辣条","Beef jerky","牛肉干","zh"],["Pancake","松饼","Waffle","华夫饼","en"]],"Animals":[["Cat","猫","Tiger","老虎"],["Butterfly","蝴蝶","Moth","飞蛾"],["Dolphin","海豚","Shark","鲨鱼"],["Rabbit","兔子","Hamster","仓鼠"],["Penguin","企鹅","Duck","鸭子"],["Horse","马","Zebra","斑马"],["Wolf","狼","Fox","狐狸"],["Crocodile","鳄鱼","Lizard","蜥蜴"],["Bee","蜜蜂","Mosquito","蚊子"],["Owl","猫头鹰","Eagle","老鹰"],["Frog","青蛙","Turtle","乌龟"],["Panda","熊猫","Koala","考拉"],["Giraffe","长颈鹿","Camel","骆驼"],["Goldfish","金鱼","Parrot","鹦鹉"],["Snake","蛇","Earthworm","蚯蚓"],["Sheep","绵羊","Goat","山羊","en"],["Squirrel","松鼠","Mouse","老鼠"],["Peacock","孔雀","Flamingo","火烈鸟"],["Spider","蜘蛛","Ant","蚂蚁"],["Octopus","章鱼","Jellyfish","水母"],["Magpie","喜鹊","Crow","乌鸦","zh"],["Dragon","龙","Phoenix","凤凰","zh"],["Qilin","麒麟","Unicorn","独角兽","zh"],["Alligator","短吻鳄","Crocodile","鳄鱼","en"]],"Places":[["Beach","海滩","Swimming pool","游泳池"],["Library","图书馆","Bookstore","书店"],["Hospital","医院","Pharmacy","药店"],["Cinema","电影院","Theater","剧院"],["Airport","机场","Train station","火车站"],["Hotel","酒店","Dormitory","宿舍"],["Supermarket","超市","Convenience store","便利店"],["Zoo","动物园","Aquarium","水族馆"],["Gym","健身房","Park","公园"],["Kindergarten","幼儿园","Playground","游乐场"],["Church","教堂","Temple","寺庙"],["Bank","银行","Post office","邮局"],["Restaurant","餐厅","Cafeteria","食堂"],["Museum","博物馆","Art gallery","美术馆"],["Elevator","电梯","Escalator","扶梯"],["Kitchen","厨房","Bathroom","浴室"],["Mountain","山","Island","岛"],["Desert","沙漠","Grassland","草原"],["Wedding","婚礼","Birthday party","生日派对"],["Classroom","教室","Office","办公室"],["Wet market","菜市场","Supermarket","超市","zh"],["Temple fair","庙会","Night market","夜市","zh"],["Bathhouse","澡堂","Hot spring","温泉","zh"],["Motel","汽车旅馆","Hotel","酒店","en"]],"Everyday objects":[["Pillow","枕头","Cushion","靠垫"],["Toothbrush","牙刷","Comb","梳子"],["Umbrella","雨伞","Raincoat","雨衣"],["Mirror","镜子","Window","窗户"],["Glasses","眼镜","Sunglasses","墨镜"],["Chopsticks","筷子","Fork","叉子"],["Scissors","剪刀","Knife","刀"],["Pen","钢笔","Chalk","粉笔","en"],["Key","钥匙","Password","密码"],["Wallet","钱包","Backpack","背包"],["Candle","蜡烛","Flashlight","手电筒"],["Socks","袜子","Gloves","手套"],["Phone","手机","Walkie-talkie","对讲机"],["Clock","时钟","Calendar","日历"],["Blanket","毯子","Towel","毛巾"],["Lipstick","口红","Crayon","蜡笔"],["Fan","风扇","Air conditioner","空调"],["Bottle","瓶子","Cup","杯子"],["Balloon","气球","Bubble","泡泡"],["Ladder","梯子","Stairs","楼梯","en"],["Red envelope","红包","Spring couplets","对联","zh"],["Abacus","算盘","Calculator","计算器","zh"],["Firecracker","鞭炮","Fireworks","烟花","zh"],["Mug","马克杯","Cup","杯子","en"]],"Jobs":[["Doctor","医生","Nurse","护士"],["Chef","厨师","Waiter","服务员"],["Teacher","老师","Coach","教练"],["Police officer","警察","Security guard","保安"],["Firefighter","消防员","Lifeguard","救生员"],["Pilot","飞行员","Flight attendant","空乘"],["Singer","歌手","Actor","演员"],["Dentist","牙医","Barber","理发师"],["Lawyer","律师","Judge","法官"],["Farmer","农民","Gardener","园丁"],["Journalist","记者","Writer","作家"],["Photographer","摄影师","Painter","画家"],["Magician","魔术师","Clown","小丑"],["Taxi driver","出租车司机","Delivery rider","外卖员"],["Programmer","程序员","Hacker","黑客"],["Astronaut","宇航员","Diver","潜水员"],["Tour guide","导游","Host","主持人"],["Vet","兽医","Zookeeper","饲养员"],["Cashier","收银员","Bank teller","银行柜员"],["Model","模特","Influencer","网红"],["Homeroom teacher","班主任","College counselor","辅导员","zh"],["Matchmaker","媒婆","Old Man under the Moon","月老","zh"],["Landlady","包租婆","Real estate agent","房产中介","zh"],["Chef","主厨","Cook","厨师","en"]],"Sports and hobbies":[["Badminton","羽毛球","Tennis","网球"],["Skiing","滑雪","Skating","滑冰","en"],["Painting","绘画","Drawing","素描"],["Basketball","篮球","Volleyball","排球"],["Soccer","足球","Rugby","橄榄球"],["Swimming","游泳","Diving","潜水"],["Yoga","瑜伽","Tai chi","太极"],["Chess","国际象棋","Go","围棋","zh"],["Karaoke","卡拉OK","Concert","演唱会"],["Fishing","钓鱼","Camping","露营"],["Boxing","拳击","Kung fu","功夫"],["Ping pong","乒乓球","Billiards","台球"],["Running","跑步","Hiking","徒步","en"],["Dancing","跳舞","Gymnastics","体操"],["Cycling","骑自行车","Horse riding","骑马"],["Surfing","冲浪","Skateboarding","滑板"],["Knitting","织毛衣","Sewing","缝纫"],["Mahjong","麻将","Poker","扑克"],["Bowling","保龄球","Golf","高尔夫"],["Jigsaw puzzle","拼图","Lego","乐高"],["Flying a kite","放风筝","Paper planes","纸飞机"],["Square dancing","广场舞","Aerobics","健身操","zh"],["Shuttlecock kicking","踢毽子","Hopscotch","跳房子","zh"],["Dou Dizhu","斗地主","Guandan","掼蛋","zh"]]};
 const TEST_URL = "one-phone.html";
 const LEVELS = [
-  {n:1, title:"One spy", desc:"The spy has a different word.", min:4},
-  {n:2, title:"One spy, two blanks", desc:"The spy has a different word. Two commoners have no word.", min:6},
-  {n:3, title:"One spy, all blank", desc:"Only the spy has a word. Every commoner is blank.", min:4},
-  {n:4, title:"Two spies", desc:"One spy has a different word, the other spy is blank.", min:6},
-  {n:5, title:"Two spies, all blank", desc:"Both spies have a word. Every commoner is blank.", min:6}
+  {n:1, title:"One spy", desc:"The spy has a different word.", zt:"一个卧底", zd:"卧底拿到不同的词。", min:4},
+  {n:2, title:"One spy, two blanks", desc:"The spy has a different word. Two commoners have no word.", zt:"一个卧底，两个白板", zd:"卧底拿到不同的词。两个平民没有词。", min:6},
+  {n:3, title:"One spy, all blank", desc:"Only the spy has a word. Every commoner is blank.", zt:"一个卧底，全白板", zd:"只有卧底有词。所有平民都是白板。", min:4},
+  {n:4, title:"Two spies", desc:"One spy has a different word, the other spy is blank.", zt:"两个卧底", zd:"一个卧底拿到不同的词，另一个卧底是白板。", min:6},
+  {n:5, title:"Two spies, all blank", desc:"Both spies have a word. Every commoner is blank.", zt:"两个卧底，全白板", zd:"两个卧底都有词。所有平民都是白板。", min:6}
 ];
 
 const store = {
@@ -108,6 +108,12 @@ const store = {
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
   del(k){ try{ localStorage.removeItem(k); }catch(e){} }
 };
+// Interface language, chosen on each phone and remembered. The words dealt follow the host's "Words in" setting instead.
+let UI = store.get("wis-ui", null) || (/^zh/i.test(navigator.language || "") ? "zh" : "en");
+const t = (en, zh) => UI === "zh" ? zh : en;
+const CAT_ZH = {"All":"全部", "Food and drink":"食物饮料", "Animals":"动物", "Places":"地点", "Everyday objects":"日常用品", "Jobs":"职业", "Sports and hobbies":"运动爱好"};
+const catName = c => t(c, CAT_ZH[c] || c);
+const lvTitle = l => t(l.title, l.zt), lvDesc = l => t(l.desc, l.zd);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const pairKey = p => p[0]+"/"+p[2];
@@ -201,10 +207,10 @@ function makePeerRoom(code, asHost){
 // ---- room plumbing ----
 async function enter(code, name, asHost){
   L.err = "";
-  if(!L.api){ L.err = "Not connected yet."; return render(); }
+  if(!L.api){ L.err = t("Not connected yet.", "还没连上。"); return render(); }
   try{
     L.R = await L.api.join("wis-" + code.toLowerCase(), {code, host: asHost});
-  }catch(e){ L.err = "Couldn't open the club (" + (e && e.code || "error") + "). Try again."; return render(); }
+  }catch(e){ L.err = t("Couldn't open the club (", "打不开房间（") + (e && e.code || "error") + t("). Try again.", "）。请再试一次。"); return render(); }
   L.code = code; L.name = name; L.isHost = asHost; L.joinedAt = Date.now();
   store.set("wis-me", {code, name, host: asHost, at: Date.now()});
   L.skipInvite = true;
@@ -370,23 +376,24 @@ function paint(html, bind){
 }
 function render(){
   const net = document.getElementById("net");
-  net.innerHTML = L.code ? `<span class="dot ${L.connected ? "" : "off"}"></span>Club ${esc(L.code)}` : "";
-  const rb = byId("rulesBtn"); if(rb) rb.textContent = L.showRules ? "Close rules" : "Rules";
+  net.innerHTML = L.code ? `<span class="dot ${L.connected ? "" : "off"}"></span>${t("Club", "房间")} ${esc(L.code)}` : "";
+  const rb = byId("rulesBtn"); if(rb) rb.textContent = L.showRules ? t("Close rules", "关闭规则") : t("Rules", "规则");
+  langUi();
   if(L.showRules) return rules();
   if(!L.code) return home();
   const S = st();
   if(!S){
     const late = Date.now() - L.joinedAt > 6000;
-    return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
-      <h1>${late ? "This club isn't open" : "Looking for the club…"}</h1>
-      <p class="muted">${late ? "Check the code with the host. The club is only open while the host's phone has this page open. If the host closed it, they can open the page and type the same code again." : "Connecting to the host's phone."}</p>
-      ${late ? `<p class="muted">We'll keep trying, so you can wait here.</p>` : ""}
-      <button id="lv">Back</button></section>`, () => { byId("lv").onclick = leave; });
+    return paint(`<section class="card"><span class="tag">${t("Club", "房间")} ${esc(L.code)}</span>
+      <h1>${late ? t("This club isn't open", "这个房间没有开") : t("Looking for the club…", "正在找房间…")}</h1>
+      <p class="muted">${late ? t("Check the code with the host. The club is only open while the host's phone has this page open. If the host closed it, they can open the page and type the same code again.", "跟房主核对一下房间号。只有房主手机开着这个页面时，房间才是开的。如果房主关掉了，房主可以重新打开页面，输入同一个房间号。") : t("Connecting to the host's phone.", "正在连接房主的手机。")}</p>
+      ${late ? `<p class="muted">${t("We'll keep trying, so you can wait here.", "我们会一直尝试连接，你可以在这里等。")}</p>` : ""}
+      <button id="lv">${t("Back", "返回")}</button></section>`, () => { byId("lv").onclick = leave; });
   }
   const meIn = S.pl && S.pl.find(x => x[0] === L.me);
   if(S.ph === "lobby") return lobby(S);
-  if(!meIn) return paint(`<section class="card"><span class="tag">Club ${esc(L.code)}</span>
-    <h1>A game is on</h1><p class="muted">You'll be dealt in when the next game starts.</p>
+  if(!meIn) return paint(`<section class="card"><span class="tag">${t("Club", "房间")} ${esc(L.code)}</span>
+    <h1>${t("A game is on", "游戏进行中")}</h1><p class="muted">${t("You'll be dealt in when the next game starts.", "下一局开始时你就能加入。")}</p>
     ${board(S)}</section>`);
   game(S, meIn);
 }
@@ -405,25 +412,25 @@ function home(){
   // Opened from an invite link: just ask for a name and go straight into that club.
   if(validCode(inviteCode) && !L.skipInvite && !gone) return invited(me, ready);
   paint(`<section class="card">
-    <h1>Play with your friends, each on your own phone</h1>
-    ${gone ? `<p class="warn">Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.</p>` : ""}
-    ${!ready && !gone ? `<p class="muted">Connecting…</p>` : ""}
-    <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
-    <button class="primary" id="mk" ${ready ? "" : "disabled"}>Create a club</button>
-    <div class="or"><span>or</span></div>
-    <div class="field"><label for="cd">Join a friend's club</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
-    <button id="jn" ${ready ? "" : "disabled"}>Join club</button>
-    <p class="muted">Dropped out of a game? Type the same code and name to get your seat back.</p>
+    <h1>${t("Play with your friends, each on your own phone", "和朋友一起玩，每人用自己的手机")}</h1>
+    ${gone ? `<p class="warn">${t(`Can't connect right now. Check your internet and reload the page, or play the <a href="${TEST_URL}">pass-the-phone version</a>.`, `现在连不上。请检查网络并刷新页面，或者玩<a href="${TEST_URL}">传手机版</a>。`)}</p>` : ""}
+    ${!ready && !gone ? `<p class="muted">${t("Connecting…", "连接中…")}</p>` : ""}
+    <div class="field"><label for="nm">${t("Your name", "你的名字")}</label><input id="nm" maxlength="20" autocomplete="nickname" value="${esc(L.name || (me && me.name) || "")}"></div>
+    <button class="primary" id="mk" ${ready ? "" : "disabled"}>${t("Create a club", "创建房间")}</button>
+    <div class="or"><span>${t("or", "或")}</span></div>
+    <div class="field"><label for="cd">${t("Join a friend's club", "加入朋友的房间")}</label><input id="cd" class="code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" value=""></div>
+    <button id="jn" ${ready ? "" : "disabled"}>${t("Join club", "加入房间")}</button>
+    <p class="muted">${t("Dropped out of a game? Type the same code and name to get your seat back.", "掉线了？输入同样的房间号和名字就能回到原来的位置。")}</p>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
-    <p class="muted">Only one phone? <a href="${TEST_URL}">Play the pass-the-phone version</a>.</p>
+    <p class="muted">${t(`Only one phone? <a href="${TEST_URL}">Play the pass-the-phone version</a>.`, `只有一部手机？<a href="${TEST_URL}">玩传手机版</a>。`)}</p>
   </section>`, () => {
     const nm = () => cleanName(byId("nm").value);
-    const need = () => { if(!nm()){ L.err = "Type your name first."; lastHtml = ""; render(); return false; } L.name = nm(); return true; };
+    const need = () => { if(!nm()){ L.err = t("Type your name first.", "请先输入你的名字。"); lastHtml = ""; render(); return false; } L.name = nm(); return true; };
     byId("mk").onclick = () => { if(!need()) return; store.del("wis-host"); enter(makeCode(), nm(), true); };
     byId("jn").onclick = () => {
       if(!need()) return;
       const c = byId("cd").value.toUpperCase().replace(/[^0-9A-Z]/g,"");
-      if(!validCode(c)){ L.err = "A club code is 4 numbers and 2 letters, like 4827KX."; lastHtml = ""; return render(); }
+      if(!validCode(c)){ L.err = t("A club code is 4 numbers and 2 letters, like 4827KX.", "房间号是4个数字加2个字母，比如 4827KX。"); lastHtml = ""; return render(); }
       enter(c, nm(), hostOf(c));
     };
     // A new club replaces the old host state only once the host actually creates it.
@@ -432,17 +439,17 @@ function home(){
 
 function invited(me, ready){
   paint(`<section class="card">
-    <span class="tag">You're invited</span>
-    <h1>Join club ${esc(inviteCode)}</h1>
-    <p class="muted">Type your name and you're in. The host starts the game.</p>
-    <div class="field"><label for="nm">Your name</label><input id="nm" maxlength="20" autocomplete="nickname" enterkeyhint="go" value="${esc(L.name || (me && me.name) || "")}"></div>
-    <button class="primary" id="jn" ${ready ? "" : "disabled"}>${ready ? "Join the game" : "Connecting…"}</button>
+    <span class="tag">${t("You're invited", "你被邀请了")}</span>
+    <h1>${t("Join club", "加入房间")} ${esc(inviteCode)}</h1>
+    <p class="muted">${t("Type your name and you're in. The host starts the game.", "输入名字就能加入。由房主开始游戏。")}</p>
+    <div class="field"><label for="nm">${t("Your name", "你的名字")}</label><input id="nm" maxlength="20" autocomplete="nickname" enterkeyhint="go" value="${esc(L.name || (me && me.name) || "")}"></div>
+    <button class="primary" id="jn" ${ready ? "" : "disabled"}>${ready ? t("Join the game", "加入游戏") : t("Connecting…", "连接中…")}</button>
     <p class="warn" id="er" ${L.err ? "" : "hidden"}>${esc(L.err)}</p>
-    <button class="link" id="other">Join with a code or create a club instead</button>
+    <button class="link" id="other">${t("Join with a code or create a club instead", "改用房间号加入，或创建房间")}</button>
   </section>`, () => {
     const go = () => {
       const n = cleanName(byId("nm").value);
-      if(!n){ L.err = "Type your name first."; lastHtml = ""; return render(); }
+      if(!n){ L.err = t("Type your name first.", "请先输入你的名字。"); lastHtml = ""; return render(); }
       if(!L.api) return;
       L.name = n; L.err = ""; enter(inviteCode, n, hostOf(inviteCode));
     };
@@ -454,6 +461,38 @@ function invited(me, ready){
 }
 function rules(){
   const S = L.code ? st() : null;
+  if(UI === "zh") return paint(`<section class="card rules">
+    <h1>玩法</h1>
+    <p>每人拿到一个秘密词语，或者是<b>白板</b>（没有词）。<b>平民</b>是一队，<b>卧底</b>是那个与众不同的人。根据关卡不同，卧底拿到一个相似但不同的词，或者是白板；有时一些甚至全部平民也是白板（见下面的关卡）。没有人会被告知自己是平民还是卧底。要在卧底撑到最后之前把卧底找出来。</p>
+    <p class="golden"><b>唯一的规则：永远如实描述你自己的词。</b>每句描述都必须符合你拿到的词，即使你怀疑自己的词和别人的不一样。不要为了和别人一致而说不符合自己词的话。（如果你没有词，就只能根据听到的内容蒙混过关。）</p>
+    <h2>每一轮</h2>
+    <ol>
+      <li>按住方框查看你的词，不要给任何人看。</li>
+      <li>应用会指定谁先开始，然后按顺时针轮流。每人大声说<b>一句描述</b>，描述自己的词。描述必须符合你的词，不能直接说出这个词。</li>
+      <li>第1轮不投票。从第2轮开始，还在场上的人秘密投票，选出你认为是卧底的人。</li>
+      <li>得票最多的人出局。出局者的词在游戏结束前保密。出局的人保持安静，也不投票。</li>
+    </ol>
+    <h2>平票</h2>
+    <p>如果两人或多人平票，只有平票的人再描述一次自己的词。然后其他人只在他们之中投票，平票的人不投票。如果再次平票，这一轮没有人出局。</p>
+    <h2>谁赢</h2>
+    <ul>
+      <li><b>一个卧底（第1到3关）：</b>卧底被投出局，平民获胜。只剩2人时卧底还在，卧底获胜。</li>
+      <li><b>两个卧底（第4和5关）：</b>两个卧底都被投出局，平民获胜。只剩3人时，卧底获胜。</li>
+    </ul>
+    <h2>关卡</h2>
+    <table><tr><th>关卡</th><th>怎么发词</th></tr>
+      ${LEVELS.map(l => `<tr><td>${l.n}. ${esc(l.zt)}</td><td>${esc(l.zd)}建议${l.min}人以上。</td></tr>`).join("")}
+    </table>
+    <p class="muted">“白板”就是你看不到词。听别人怎么说，想办法混进去。</p>
+    <h2>计分</h2>
+    <p>卧底获胜：每个卧底得2分。平民获胜：每个平民得1分，包括白板和之前被投出局的人。</p>
+    <h2>小技巧</h2>
+    <ul>
+      <li>描述要模糊到让卧底猜不出你的词，又要清楚到让队友相信你。</li>
+      <li>如果别人的描述和你的词对不上，你可能就是卧底。描述仍要符合你的词，但挑一个你的词和他们的词都有的特点，好混在里面。</li>
+    </ul>
+    <button class="primary" id="rb">${S ? "回到游戏" : "知道了"}</button>
+  </section>`, () => { byId("rb").onclick = closeRules; });
   paint(`<section class="card rules">
     <h1>How to play</h1>
     <p>Everyone gets a secret word, or a <b>blank</b> (no word). The <b>commoners</b> are one team and the <b>spy</b> is the odd one out. Depending on the level, the spy has a different but similar word or is blank, and some or even all commoners can be blank too (see Levels below). Nobody is told whether they're a commoner or the spy. Find the spy before the spy outlasts you.</p>
@@ -488,31 +527,32 @@ function rules(){
   </section>`, () => { byId("rb").onclick = closeRules; });
 }
 function closeRules(){ L.showRules = false; lastHtml = ""; window.scrollTo(0,0); render(); }
-function levelCard(n){ const l = LEVELS[n-1]; return `<b>${l.n}</b><span>${l.title}<small>${l.desc} Suggested: ${l.min}+ players.</small></span>`; }
+function levelCard(n){ const l = LEVELS[n-1]; return `<b>${l.n}</b><span>${esc(lvTitle(l))}<small>${esc(lvDesc(l))}${t(` Suggested: ${l.min}+ players.`, `建议${l.min}人以上。`)}</small></span>`; }
 function lobby(S){
   const names = S.lob || [], n = names.length, Lv = LEVELS[S.lv-1];
   const list = `<ul class="list">${names.map(x => `<li><span>${esc(x)}</span></li>`).join("")}</ul>`;
-  if(!L.isHost) return paint(`<section class="card"><span class="tag">Club ${esc(S.code)}</span>
-    <h1>You're in. Waiting for the host to start</h1>
-    <p class="muted">Level ${S.lv}: ${esc(Lv.title)}. ${esc(Lv.desc)}</p>
-    <p class="tag">${n} in the club</p>${list}${board(S)}</section>`);
-  paint(`<section class="card"><span class="tag">Your club code</span>
+  const inClub = `<p class="tag">${t(`${n} in the club`, `房间里${n}人`)}</p>`;
+  if(!L.isHost) return paint(`<section class="card"><span class="tag">${t("Club", "房间")} ${esc(S.code)}</span>
+    <h1>${t("You're in. Waiting for the host to start", "你已加入，等房主开始")}</h1>
+    <p class="muted">${t(`Level ${S.lv}: `, `第${S.lv}关：`)}${esc(lvTitle(Lv))}${t(". ", "。")}${esc(lvDesc(Lv))}</p>
+    ${inClub}${list}${board(S)}</section>`);
+  paint(`<section class="card"><span class="tag">${t("Your club code", "你的房间号")}</span>
     <div class="bigcode">${esc(S.code)}</div>
-    <p class="muted">Friends open this same page on their phone, tap <b>Join club</b> and type the code.${L.api && L.api.kind === "peer" ? "" : " Each friend needs access to the page first: add their email in the Share menu."}</p>
-    ${L.api && L.api.kind === "peer" ? `<div class="field"><label for="invurl">Invite link</label><input id="invurl" readonly value="${esc(inviteUrl(S.code))}"></div>
-    <div class="row"><button id="inv">Copy link</button>${navigator.share ? `<button id="shr">Share…</button>` : ""}</div><p class="muted" id="invok" ${L.invMsg ? "" : "hidden"}>${esc(L.invMsg || "")}</p>` : ""}
-    <p class="tag">${n} in the club</p>${list}</section>
+    <p class="muted">${t("Friends open this same page on their phone, tap <b>Join club</b> and type the code.", "朋友在自己手机上打开这个页面，点<b>加入房间</b>，输入房间号。")}${L.api && L.api.kind === "peer" ? "" : t(" Each friend needs access to the page first: add their email in the Share menu.", " 每个朋友要先有页面权限：在分享菜单里添加他们的邮箱。")}</p>
+    ${L.api && L.api.kind === "peer" ? `<div class="field"><label for="invurl">${t("Invite link", "邀请链接")}</label><input id="invurl" readonly value="${esc(inviteUrl(S.code))}"></div>
+    <div class="row"><button id="inv">${t("Copy link", "复制链接")}</button>${navigator.share ? `<button id="shr">${t("Share…", "分享…")}</button>` : ""}</div><p class="muted" id="invok" ${L.invMsg ? "" : "hidden"}>${esc(L.invMsg || "")}</p>` : ""}
+    ${inClub}${list}</section>
     <section class="card">
-    <div class="field"><label>Level</label><div class="levels">${LEVELS.map(l => `<button class="level" data-l="${l.n}" aria-pressed="${S.lv===l.n}">${levelCard(l.n)}</button>`).join("")}</div></div>
+    <div class="field"><label>${t("Level", "关卡")}</label><div class="levels">${LEVELS.map(l => `<button class="level" data-l="${l.n}" aria-pressed="${S.lv===l.n}">${levelCard(l.n)}</button>`).join("")}</div></div>
     <div class="row">
-      <div class="field"><label for="cat">Category</label><select id="cat">${["All",...Object.keys(BANK)].map(c => `<option ${c===S.cat?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
-      <div class="field"><label for="lang">Words in</label><select id="lang">
-        <option value="en" ${S.lang==="en"?"selected":""}>English</option><option value="zh" ${S.lang==="zh"?"selected":""}>中文</option><option value="both" ${S.lang==="both"?"selected":""}>Both</option></select></div>
+      <div class="field"><label for="cat">${t("Category", "类别")}</label><select id="cat">${["All",...Object.keys(BANK)].map(c => `<option value="${esc(c)}" ${c===S.cat?"selected":""}>${esc(catName(c))}</option>`).join("")}</select></div>
+      <div class="field"><label for="lang">${t("Words in", "词语语言")}</label><select id="lang">
+        <option value="en" ${S.lang==="en"?"selected":""}>English</option><option value="zh" ${S.lang==="zh"?"selected":""}>中文</option><option value="both" ${S.lang==="both"?"selected":""}>${t("Both", "中英都有")}</option></select></div>
     </div>
-    <p class="warn" ${n >= 3 && n < Lv.min ? "" : "hidden"}>Level ${Lv.n} plays best with ${Lv.min} or more players. You can still play.</p>
-    <button class="primary" id="go" ${n < 3 ? "disabled" : ""}>${n < 3 ? "Need at least 3 players" : "Deal the words"}</button>
+    <p class="warn" ${n >= 3 && n < Lv.min ? "" : "hidden"}>${t(`Level ${Lv.n} plays best with ${Lv.min} or more players. You can still play.`, `第${Lv.n}关最好有${Lv.min}人或以上。人少也可以玩。`)}</p>
+    <button class="primary" id="go" ${n < 3 ? "disabled" : ""}>${n < 3 ? t("Need at least 3 players", "至少需要3人") : t("Deal the words", "发词")}</button>
     </section>${S.sc.length ? `<section class="card">${board(S, true)}</section>` : ""}
-    <p class="foot">Closed this page by accident? Open the site again and type ${esc(S.code)}. This phone stays the host.</p>`, () => {
+    <p class="foot">${t(`Closed this page by accident? Open the site again and type ${esc(S.code)}. This phone stays the host.`, `不小心关掉了页面？重新打开网站，输入 ${esc(S.code)}。这部手机仍然是房主。`)}</p>`, () => {
     app.querySelectorAll(".level").forEach(b => b.onclick = () => { H.level = +b.dataset.l; saveHost(); tick(); });
     byId("cat").onchange = e => { H.cat = e.target.value; saveHost(); tick(); };
     byId("lang").onchange = e => { H.lang = e.target.value; saveHost(); tick(); };
@@ -522,72 +562,72 @@ function lobby(S){
       let copied = false;
       try{ await navigator.clipboard.writeText(url); copied = true; }catch(e){}
       if(!copied){ try{ box.focus(); box.select(); box.setSelectionRange(0, url.length); copied = document.execCommand("copy"); }catch(e){} }
-      L.invMsg = copied ? "Link copied. Paste it in your group chat." : "Press and hold the link above to copy it.";
+      L.invMsg = copied ? t("Link copied. Paste it in your group chat.", "链接已复制，粘贴到群聊里吧。") : t("Press and hold the link above to copy it.", "长按上面的链接来复制。");
       lastHtml = ""; render();
     };
     const shr = byId("shr"); if(shr) shr.onclick = async () => {
-      try{ await navigator.share({title:"WhoIsSpy", text:"Join my WhoIsSpy club " + S.code, url: inviteUrl(S.code)}); }
-      catch(e){ if(e && e.name !== "AbortError"){ L.invMsg = "Sharing didn't work here. Use Copy link instead."; lastHtml = ""; render(); } }
+      try{ await navigator.share({title:"WhoIsSpy", text:t("Join my WhoIsSpy club ", "来加入我的谁是卧底房间 ") + S.code, url: inviteUrl(S.code)}); }
+      catch(e){ if(e && e.name !== "AbortError"){ L.invMsg = t("Sharing didn't work here. Use Copy link instead.", "这里没法分享，请用复制链接。"); lastHtml = ""; render(); } }
     };
     const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
   });
 }
 function board(S, host){
   if(!S.sc || !S.sc.length) return "";
-  return `<h2>Scoreboard</h2><p class="muted">Spy win: 2 points each. Commoner win: 1 point each.</p>
+  return `<h2>${t("Scoreboard", "积分榜")}</h2><p class="muted">${t("Spy win: 2 points each. Commoner win: 1 point each.", "卧底获胜：每人2分。平民获胜：每人1分。")}</p>
     <ul class="list">${S.sc.map(([n,s]) => `<li><span>${esc(n)}</span><span class="score">${s}</span></li>`).join("")}</ul>
-    ${host && L.isHost ? `<button id="rs">Reset scoreboard</button>` : ""}`;
+    ${host && L.isHost ? `<button id="rs">${t("Reset scoreboard", "积分清零")}</button>` : ""}`;
 }
 
 function game(S, meIn){
   const nameOf = p => { const x = S.pl.find(y => y[0] === p); return x ? x[1] : "?"; };
   const alive = meIn[2] === 1, myWord = S.w ? S.w[L.me] : "";
   const starterIn = S.pl.some(x => x[1] === S.st && x[2] === 1);
-  const roster = `<ul class="list">${S.pl.map(x => `<li class="${x[2] ? "" : "out"}"><span>${esc(x[1])}${x[0]===L.me ? " (you)" : ""}</span>${x[1]===S.st && x[2] ? '<span class="chip">Starts</span>' : ""}</li>`).join("")}</ul>`;
-  const reveal = `<div class="reveal" id="rv" tabindex="0" role="button" aria-label="Hold to see your word"><div id="rvt"><span class="muted">Hold to see your word</span></div></div>`;
-  const tag = `<span class="tag">Level ${S.lv} · Round ${S.rd}${alive ? "" : " · You're out"}</span>`;
+  const roster = `<ul class="list">${S.pl.map(x => `<li class="${x[2] ? "" : "out"}"><span>${esc(x[1])}${x[0]===L.me ? t(" (you)", "（你）") : ""}</span>${x[1]===S.st && x[2] ? `<span class="chip">${t("Starts", "先说")}</span>` : ""}</li>`).join("")}</ul>`;
+  const reveal = `<div class="reveal" id="rv" tabindex="0" role="button" aria-label="${t("Hold to see your word", "按住查看你的词")}"><div id="rvt"><span class="muted">${t("Hold to see your word", "按住查看你的词")}</span></div></div>`;
+  const tag = `<span class="tag">${t(`Level ${S.lv} · Round ${S.rd}`, `第${S.lv}关 · 第${S.rd}轮`)}${alive ? "" : t(" · You're out", " · 你已出局")}</span>`;
   let body = "", host = "", bind = null;
   if(S.ph === "describe"){
-    body = `${tag}<h1>${starterIn ? `${esc(S.st)} starts` : `${esc(S.st)} is out`}</h1>
-      <p class="muted">${starterIn ? "Then go clockwise around the table." : "The next person clockwise who is still in starts, then go clockwise."} Say one clue about your own word, out loud. It must be true about your word.</p>
-      ${alive ? reveal : `<p class="muted">You're out. Stay quiet and watch.</p>`}${roster}`;
-    host = `<button class="primary" id="hx">${S.rd === 1 ? "Everyone has spoken, next round" : "Everyone has spoken, vote"}</button>`;
+    body = `${tag}<h1>${starterIn ? t(`${esc(S.st)} starts`, `${esc(S.st)} 先说`) : t(`${esc(S.st)} is out`, `${esc(S.st)} 已出局`)}</h1>
+      <p class="muted">${starterIn ? t("Then go clockwise around the table.", "然后按顺时针轮流。") : t("The next person clockwise who is still in starts, then go clockwise.", "由顺时针方向下一个还在场的人先说，然后顺时针轮流。")}${t(" Say one clue about your own word, out loud. It must be true about your word.", "大声说一句描述你自己词的话，必须符合你的词。")}</p>
+      ${alive ? reveal : `<p class="muted">${t("You're out. Stay quiet and watch.", "你已出局，请安静观看。")}</p>`}${roster}`;
+    host = `<button class="primary" id="hx">${S.rd === 1 ? t("Everyone has spoken, next round", "大家都说完了，下一轮") : t("Everyone has spoken, vote", "大家都说完了，投票")}</button>`;
     bind = () => { const b = byId("hx"); if(b) b.onclick = () => S.rd === 1 ? nextRound() : startVote(H.game.P.filter(x => x.a).map(x => x.p)); };
   } else if(S.ph === "vote"){
     const mine = myVote && myVote.vid === S.vid ? myVote.t : null;
     const opts = S.cd.filter(p => p !== L.me);
     const tied = S.tie && S.cd.includes(L.me), canV = alive && !tied;
-    body = `<span class="tag">${S.tie ? "Tie-break vote" : "Secret vote"} · Round ${S.rd}</span>
-      ${!alive ? `<h1>Voting</h1><p class="muted">You're out, so you don't vote this time.</p>`
-        : tied ? `<h1>Everyone else is voting</h1><p class="muted">You're one of the tied players, so you don't vote this time.</p>`
-        : mine ? `<h1>Vote in</h1><p class="muted">You picked ${esc(nameOf(mine))}. Waiting for everyone else. Tap another name to change it.</p>`
-        : `<h1>Who is the spy?</h1><p class="muted">Tap one name. Nobody will see who you picked.</p>`}
+    body = `<span class="tag">${S.tie ? t("Tie-break vote", "平票重投") : t("Secret vote", "秘密投票")} · ${t(`Round ${S.rd}`, `第${S.rd}轮`)}</span>
+      ${!alive ? `<h1>${t("Voting", "投票中")}</h1><p class="muted">${t("You're out, so you don't vote this time.", "你已出局，这次不投票。")}</p>`
+        : tied ? `<h1>${t("Everyone else is voting", "其他人正在投票")}</h1><p class="muted">${t("You're one of the tied players, so you don't vote this time.", "你是平票的人之一，这次不投票。")}</p>`
+        : mine ? `<h1>${t("Vote in", "已投票")}</h1><p class="muted">${t(`You picked ${esc(nameOf(mine))}. Waiting for everyone else. Tap another name to change it.`, `你选了 ${esc(nameOf(mine))}。等其他人投票。点别的名字可以改票。`)}</p>`
+        : `<h1>${t("Who is the spy?", "谁是卧底？")}</h1><p class="muted">${t("Tap one name. Nobody will see who you picked.", "点一个名字。没人会知道你选了谁。")}</p>`}
       ${canV ? `<div class="picks">${opts.map(p => `<button class="pick" data-p="${esc(p)}" aria-pressed="${mine===p}" ${mine===p ? 'style="border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)"' : ""}>${esc(nameOf(p))}</button>`).join("")}</div>` : ""}
       ${alive ? reveal : ""}`;
-    host = `<p class="muted">${S.nv} of ${S.nt} have voted. The result shows as soon as everyone has.</p><button id="hx">End the vote now</button>`;
+    host = `<p class="muted">${t(`${S.nv} of ${S.nt} have voted. The result shows as soon as everyone has.`, `${S.nt}人中已有${S.nv}人投票。大家都投完就显示结果。`)}</p><button id="hx">${t("End the vote now", "现在结束投票")}</button>`;
     bind = () => { app.querySelectorAll(".pick").forEach(b => b.onclick = () => vote(b.dataset.p)); const b = byId("hx"); if(b) b.onclick = tally; };
   } else if(S.ph === "tie"){
-    body = `<span class="stamp">Tie vote</span><h1>${S.cd.map(p => esc(nameOf(p))).join(" and ")} are tied</h1>
-      <p class="muted">Only they describe their word once more. Then everyone else votes between just them. The tied players don't vote.</p>${alive ? reveal : ""}`;
-    host = `<button class="primary" id="hx">They've spoken, vote again</button>`;
+    body = `<span class="stamp">${t("Tie vote", "平票")}</span><h1>${t(`${S.cd.map(p => esc(nameOf(p))).join(" and ")} are tied`, `${S.cd.map(p => esc(nameOf(p))).join("和")}平票`)}</h1>
+      <p class="muted">${t("Only they describe their word once more. Then everyone else votes between just them. The tied players don't vote.", "只有平票的人再描述一次自己的词。然后其他人只在他们之中投票。平票的人不投票。")}</p>${alive ? reveal : ""}`;
+    host = `<button class="primary" id="hx">${t("They've spoken, vote again", "说完了，重新投票")}</button>`;
     bind = () => { const b = byId("hx"); if(b) b.onclick = () => startVote(H.game.cd); };
   } else if(S.ph === "nobody"){
-    body = `<span class="stamp">Tied again</span><h1>Nobody is out this round</h1><p class="muted">Play moves on to the next round.</p>`;
-    host = `<button class="primary" id="hx">Start round ${S.rd + 1}</button>`;
+    body = `<span class="stamp">${t("Tied again", "再次平票")}</span><h1>${t("Nobody is out this round", "这一轮没有人出局")}</h1><p class="muted">${t("Play moves on to the next round.", "游戏进入下一轮。")}</p>`;
+    host = `<button class="primary" id="hx">${t(`Start round ${S.rd + 1}`, `开始第${S.rd + 1}轮`)}</button>`;
     bind = () => { const b = byId("hx"); if(b) b.onclick = nextRound; };
   } else if(S.ph === "out"){
-    body = `<span class="stamp">Voted out</span><h1>${esc(S.lo)} is out</h1>
-      <p class="muted">${S.lo === meIn[1] ? "That's you. Keep your word to yourself until the end." : "Their word stays secret until the game ends. The game goes on."}</p>${roster}`;
-    host = `<button class="primary" id="hx">Start round ${S.rd + 1}</button>`;
+    body = `<span class="stamp">${t("Voted out", "出局")}</span><h1>${t(`${esc(S.lo)} is out`, `${esc(S.lo)} 出局了`)}</h1>
+      <p class="muted">${S.lo === meIn[1] ? t("That's you. Keep your word to yourself until the end.", "就是你。游戏结束前别说出你的词。") : t("Their word stays secret until the game ends. The game goes on.", "出局者的词在游戏结束前保密。游戏继续。")}</p>${roster}`;
+    host = `<button class="primary" id="hx">${t(`Start round ${S.rd + 1}`, `开始第${S.rd + 1}轮`)}</button>`;
     bind = () => { const b = byId("hx"); if(b) b.onclick = nextRound; };
   } else if(S.ph === "over"){
     return over(S);
   }
-  paint(`<section class="card">${body}${L.isHost ? `<div class="hostbar"><span class="tag">Host</span>${host}</div>` : ""}</section>`, () => {
+  paint(`<section class="card">${body}${L.isHost ? `<div class="hostbar"><span class="tag">${t("Host", "房主")}</span>${host}</div>` : ""}</section>`, () => {
     bind && bind();
-    const rv = byId("rv"), t = byId("rvt");
+    const rv = byId("rv"), rt = byId("rvt");
     if(!rv) return;
-    const show = on => { rv.classList.toggle("on", on); t.innerHTML = on ? (myWord ? `<div class="word">${esc(myWord)}</div>` : `<div class="word">You have no word</div><p class="muted">你没有词 · listen and blend in</p>`) : `<span class="muted">Hold to see your word</span>`; };
+    const show = on => { rv.classList.toggle("on", on); rt.innerHTML = on ? (myWord ? `<div class="word">${esc(myWord)}</div>` : t(`<div class="word">You have no word</div><p class="muted">你没有词 · listen and blend in</p>`, `<div class="word">你没有词</div><p class="muted">听别人怎么说，想办法混进去</p>`)) : `<span class="muted">${t("Hold to see your word", "按住查看你的词")}</span>`; };
     rv.addEventListener("pointerdown", e => { e.preventDefault(); show(true); });
     ["pointerup","pointerleave","pointercancel"].forEach(ev => rv.addEventListener(ev, () => show(false)));
     rv.addEventListener("contextmenu", e => e.preventDefault());
@@ -599,16 +639,16 @@ function game(S, meIn){
 function over(S){
   const spy = S.win === "s", r = L.rated[S.gid] || null;
   paint(`<section class="card">
-    <span class="stamp ${spy ? "" : "good"}">${spy ? "Spies win" : "Commoners win"}</span>
-    <h1>${S.lo ? `${esc(S.lo)} was voted out. ` : ""}${spy ? "The spies made it to the end." : "Every spy has been caught."}</h1>
-    <p class="muted">Commoner word: <b>${esc(S.cw)}</b> · Spy word: <b>${esc(S.sw)}</b></p>
-    <ul class="list">${S.pl.map(x => `<li><span>${esc(x[1])} · ${S.w[x[0]] ? esc(S.w[x[0]]) : "<i>blank</i>"}</span><span class="chip ${S.ro[x[0]]==="s" ? "spy" : ""}">${S.ro[x[0]]==="s" ? "Spy" : "Commoner"}</span></li>`).join("")}</ul>
+    <span class="stamp ${spy ? "" : "good"}">${spy ? t("Spies win", "卧底获胜") : t("Commoners win", "平民获胜")}</span>
+    <h1>${S.lo ? t(`${esc(S.lo)} was voted out. `, `${esc(S.lo)} 被投出局。`) : ""}${spy ? t("The spies made it to the end.", "卧底撑到了最后。") : t("Every spy has been caught.", "所有卧底都被找出来了。")}</h1>
+    <p class="muted">${t("Commoner word: ", "平民词：")}<b>${esc(S.cw)}</b> · ${t("Spy word: ", "卧底词：")}<b>${esc(S.sw)}</b></p>
+    <ul class="list">${S.pl.map(x => `<li><span>${esc(x[1])} · ${S.w[x[0]] ? esc(S.w[x[0]]) : `<i>${t("blank", "白板")}</i>`}</span><span class="chip ${S.ro[x[0]]==="s" ? "spy" : ""}">${S.ro[x[0]]==="s" ? t("Spy", "卧底") : t("Commoner", "平民")}</span></li>`).join("")}</ul>
   </section>
-  <section class="card"><h2>Fun pair?</h2>
-    <div class="thumbs"><button id="up" aria-pressed="${r==="up"}">👍 Yes</button><button id="dn" aria-pressed="${r==="down"}">👎 No</button></div>
-    <p class="muted">For now ratings stay on your phone. Later they'll count across all clubs.</p></section>
+  <section class="card"><h2>${t("Fun pair?", "这对词好玩吗？")}</h2>
+    <div class="thumbs"><button id="up" aria-pressed="${r==="up"}">👍 ${t("Yes", "好玩")}</button><button id="dn" aria-pressed="${r==="down"}">👎 ${t("No", "不好玩")}</button></div>
+    <p class="muted">${t("For now ratings stay on your phone. Later they'll count across all clubs.", "目前评分只保存在你的手机上，以后会汇总所有房间的评分。")}</p></section>
   <section class="card">${board(S, true)}
-    ${L.isHost ? `<div class="row"><button class="primary" id="again">Play again</button><button id="lob">Change level</button></div>` : `<p class="muted">The host starts the next game.</p>`}
+    ${L.isHost ? `<div class="row"><button class="primary" id="again">${t("Play again", "再玩一局")}</button><button id="lob">${t("Change level", "换关卡")}</button></div>` : `<p class="muted">${t("The host starts the next game.", "由房主开始下一局。")}</p>`}
   </section>`, () => {
     const rate = v => {
       const k = S.pk, cur = L.ratings[k] || {up:0, down:0}, was = L.rated[S.gid];
@@ -621,6 +661,16 @@ function over(S){
     const rs = byId("rs"); if(rs) rs.onclick = () => { H.scores = {}; saveHost(); tick(); };
   });
 }
+
+// ---- language switch (header) ----
+function langUi(){
+  document.documentElement.lang = t("en", "zh-Hans");
+  const b = byId("langBtn");
+  b.textContent = t("中文", "EN"); b.lang = t("zh-Hans", "en");
+  b.setAttribute("aria-label", t("切换到中文", "Switch to English"));
+  byId("foot").textContent = t("Everyone opens this page on their own phone. One person creates the club, the rest join with its code.", "每人在自己手机上打开这个页面。一个人创建房间，其他人用房间号加入。");
+}
+byId("langBtn").onclick = () => { UI = UI === "zh" ? "en" : "zh"; store.set("wis-ui", UI); L.invMsg = ""; lastHtml = ""; render(); };
 
 // ---- boot ----
 byId("rulesBtn").onclick = () => { L.showRules ? closeRules() : (L.showRules = true, lastHtml = "", window.scrollTo(0,0), render()); };
